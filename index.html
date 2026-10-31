@@ -1132,6 +1132,94 @@ img { image-rendering: auto; }
 .listing-photo { height: 100% !important; }
 .listing-photo img { max-height: 300px !important; object-fit: contain !important; }
 
+
+/* ============================================================
+   Финальные правила: единый вид, ничего не режется.
+   ============================================================ */
+
+/* общий фон страницы — светлый, как у Авито */
+html, body { background: #f4f6f8 !important; }
+#app, .wrap, .shell { background: #fff !important; }
+
+/* карточка объявления */
+.card {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+/* фото в карточке: ровно 124×124, ничего не режется */
+.card .thumb {
+  width: 124px !important; min-width: 124px !important; max-width: 124px !important;
+  height: 124px !important; min-height: 124px !important; max-height: 124px !important;
+  padding: 8px !important;
+  background: #fff !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+}
+.card .thumb .svg-wrap { width: 100% !important; height: 100% !important; display: grid; place-items: center; }
+.card .thumb img {
+  width: 100% !important; height: 100% !important;
+  object-fit: contain !important; object-position: center !important;
+  background: #fff !important; border-radius: 0 !important;
+}
+
+.card-body { padding: 10px 14px !important; }
+.card-price { font-size: 19px !important; font-weight: 800 !important; color: #10131a !important; }
+.card-title { color: #0a5bff !important; font-weight: 600 !important; font-size: 14.5px !important; }
+.card-desc { color: #767f8c !important; font-size: 12.5px !important; }
+
+/* объявление: фото целиком */
+.gallery-view .slide {
+  height: 340px !important;
+  background: #fff !important;
+  display: grid !important; place-items: center !important;
+}
+.listing-photo { width: 100% !important; height: 100% !important; display: grid !important; place-items: center !important; }
+.listing-photo img {
+  max-width: 100% !important; max-height: 340px !important;
+  width: auto !important; height: auto !important;
+  object-fit: contain !important;
+}
+
+/* модалка объявления — светлая */
+.overlay .sheet, .ov, .modal, .sheet { background: #fff !important; }
+.sheet * { color: #10131a; }
+.detail, .ov-body { background: #fff !important; }
+
+/* кнопки */
+.btn.primary, #btn-write, .buy-btn {
+  background: #0a5bff !important; color: #fff !important; font-weight: 700 !important;
+  border-radius: 12px !important; border: 0 !important;
+}
+
+/* на телефоне */
+@media (max-width: 620px) {
+  .card { flex-direction: row !important; }
+  .card .thumb { width: 108px !important; min-width: 108px !important; height: 108px !important; max-width: 108px !important; max-height: 108px !important; }
+  .gallery-view .slide { height: 260px !important; }
+  .listing-photo img { max-height: 260px !important; }
+}
+
+
+/* фото в галерее — без тёмной рамки и без лишнего фона */
+.gallery-view .slide img.pphoto,
+.gallery-view .slide .listing-photo img {
+  background: #fff !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  filter: none !important;
+}
+.gallery { background: #fff !important; }
+.gallery-view .slide { background: #fff !important; }
+
 </style>
 </head>
 <body>
@@ -2875,705 +2963,6 @@ window.DESK_PHOTO = [];
 })(window);
 
 
-/* ===== phone_spec.js ===== */
-/* ============================================================
-   MIDE — паспорта моделей.
-   Для каждой: форма корпуса, материал, тип камеры, вырез.
-   Сверено с внешним видом моделей (GSMArena, официальные рендеры).
-   ============================================================ */
-(function (root) {
-  'use strict';
-
-  // s: slim | slab | wide | tall | mini | se
-  // mat: glass | plastic | titanium | matte
-  // cam: тип модуля
-  // cut: notch | island | hole | drop | chin | punch_small
-  const SPEC = {
-    // ---------------- Apple ----------------
-    ip8:        { s: 'se', mat: 'glass', cam: 'single', cut: 'chin' },
-    ipxr:       { s: 'tall', mat: 'glass', cam: 'single', cut: 'notch' },
-    ip11:       { s: 'tall', mat: 'glass', cam: 'dualSquare', cut: 'notch' },
-    ip11pro:    { s: 'slab', mat: 'glass', cam: 'triSquare', cut: 'notch' },
-    ip12:       { s: 'slab', mat: 'glass', cam: 'dualSquare', cut: 'notch' },
-    ip12pm:     { s: 'wide', mat: 'glass', cam: 'triSquare', cut: 'notch' },
-    ip13:       { s: 'slab', mat: 'glass', cam: 'dualSquare', cut: 'notch' },
-    ip13pro:    { s: 'slab', mat: 'glass', cam: 'triSquare', cut: 'notch' },
-    ip13pm:     { s: 'wide', mat: 'glass', cam: 'triSquare', cut: 'notch' },
-    ip14:       { s: 'slab', mat: 'glass', cam: 'dualSquare', cut: 'notch' },
-    ip14pro:    { s: 'slab', mat: 'glass', cam: 'triSquare', cut: 'island' },
-    ip15:       { s: 'slab', mat: 'glass', cam: 'dualSquare', cut: 'island' },
-    ip15pm:     { s: 'wide', mat: 'titanium', cam: 'triSquare', cut: 'island' },
-    ipse2020:   { s: 'se', mat: 'glass', cam: 'single', cut: 'chin' },
-    ipse2022:   { s: 'se', mat: 'glass', cam: 'single', cut: 'chin' },
-    ip16:       { s: 'slab', mat: 'glass', cam: 'dualSquare', cut: 'island' },
-    ip16plus:   { s: 'wide', mat: 'glass', cam: 'dualSquare', cut: 'island' },
-    ip16pro:    { s: 'slab', mat: 'titanium', cam: 'triSquare', cut: 'island' },
-    ip16pm:     { s: 'wide', mat: 'titanium', cam: 'triSquare', cut: 'island' },
-    ip16e:      { s: 'slab', mat: 'glass', cam: 'single', cut: 'notch' },
-    ip17:       { s: 'slab', mat: 'glass', cam: 'dualBar', cut: 'island' },
-    ip17air:    { s: 'slim', mat: 'titanium', cam: 'singleBar', cut: 'island' },
-    ip17pro:    { s: 'slab', mat: 'titanium', cam: 'triBar', cut: 'island' },
-    ip17pm:     { s: 'wide', mat: 'titanium', cam: 'triBar', cut: 'island' },
-    ip18:       { s: 'slab', mat: 'glass', cam: 'dualBar', cut: 'island' },
-    ip18pro:    { s: 'slab', mat: 'titanium', cam: 'triBar', cut: 'island' },
-    ip18pm:     { s: 'wide', mat: 'titanium', cam: 'triBar', cut: 'island' },
-    ipfold:     { s: 'book', mat: 'titanium', cam: 'dualVertical', cut: 'hole', fold: 'book' },
-
-    // ---------------- Samsung ----------------
-    a12:        { s: 'slab', mat: 'plastic', cam: 'galaxyA_small', cut: 'drop' },
-    a32:        { s: 'slab', mat: 'plastic', cam: 'galaxyA', cut: 'drop' },
-    a52:        { s: 'slab', mat: 'plastic', cam: 'galaxyA', cut: 'hole' },
-    a54:        { s: 'slab', mat: 'glass', cam: 'galaxyA', cut: 'hole' },
-    a26:        { s: 'slab', mat: 'plastic', cam: 'galaxyA_small', cut: 'drop' },
-    a36:        { s: 'slab', mat: 'plastic', cam: 'galaxyA', cut: 'hole' },
-    a56:        { s: 'slab', mat: 'glass', cam: 'galaxyA', cut: 'hole' },
-    a57:        { s: 'slab', mat: 'plastic', cam: 'galaxyA', cut: 'hole' },
-    s20:        { s: 'slab', mat: 'glass', cam: 'galaxyS', cut: 'hole' },
-    s21:        { s: 'slab', mat: 'plastic', cam: 'galaxyS', cut: 'hole' },
-    s21u:       { s: 'wide', mat: 'glass', cam: 'galaxyS', cut: 'hole' },
-    s22:        { s: 'slab', mat: 'glass', cam: 'galaxyS', cut: 'hole' },
-    s23:        { s: 'slab', mat: 'glass', cam: 'galaxyS90', cut: 'hole' },
-    s23u:       { s: 'wide', mat: 'glass', cam: 'galaxyUltra', cut: 'hole' },
-    s24u:       { s: 'wide', mat: 'titanium', cam: 'galaxyUltra', cut: 'hole' },
-    s24fe:      { s: 'slab', mat: 'glass', cam: 'galaxyS90', cut: 'hole' },
-    s25:        { s: 'slab', mat: 'glass', cam: 'galaxyS90', cut: 'hole' },
-    s25plus:    { s: 'wide', mat: 'glass', cam: 'galaxyS90', cut: 'hole' },
-    s25u:       { s: 'wide', mat: 'titanium', cam: 'galaxyUltra', cut: 'hole' },
-    s25edge:    { s: 'slim', mat: 'titanium', cam: 'galaxyS90', cut: 'hole' },
-    s26:        { s: 'slab', mat: 'glass', cam: 'galaxyS90', cut: 'hole' },
-    s26plus:    { s: 'wide', mat: 'glass', cam: 'galaxyS90', cut: 'hole' },
-    s26u:       { s: 'wide', mat: 'titanium', cam: 'galaxyUltra', cut: 'hole' },
-    note20u:    { s: 'wide', mat: 'glass', cam: 'galaxyUltra', cut: 'hole' },
-    zflip3:     { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    zflip4:     { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    zflip5:     { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    zflip6:     { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    zflip7:     { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    zfold3:     { s: 'book', mat: 'glass', cam: 'galaxyS', cut: 'hole', fold: 'book' },
-    zfold4:     { s: 'book', mat: 'glass', cam: 'galaxyS', cut: 'hole', fold: 'book' },
-    zfold6:     { s: 'book', mat: 'glass', cam: 'galaxyS90', cut: 'hole', fold: 'book' },
-    zfold7:     { s: 'book', mat: 'glass', cam: 'galaxyS90', cut: 'hole', fold: 'book' },
-
-    // ---------------- Xiaomi / Redmi / POCO ----------------
-    r9a:        { s: 'slab', mat: 'plastic', cam: 'xiaomi2', cut: 'drop' },
-    redmi15:    { s: 'slab', mat: 'plastic', cam: 'xiaomi2', cut: 'drop' },
-    redmia5:    { s: 'slab', mat: 'plastic', cam: 'xiaomi1', cut: 'drop' },
-    rn10:       { s: 'slab', mat: 'glass', cam: 'xiaomi3rect', cut: 'hole' },
-    rn12:       { s: 'slab', mat: 'glass', cam: 'xiaomi3rect', cut: 'hole' },
-    rn14:       { s: 'slab', mat: 'plastic', cam: 'xiaomi3', cut: 'hole' },
-    rn14p:      { s: 'slab', mat: 'glass', cam: 'xiaomi3', cut: 'hole' },
-    rn15:       { s: 'slab', mat: 'plastic', cam: 'xiaomi3', cut: 'hole' },
-    rn15p:      { s: 'slab', mat: 'glass', cam: 'xiaomi3', cut: 'hole' },
-    mi12:       { s: 'slab', mat: 'glass', cam: 'xiaomi3', cut: 'hole' },
-    mi13:       { s: 'slab', mat: 'glass', cam: 'xiaomi3big', cut: 'hole' },
-    mi14t:      { s: 'slab', mat: 'glass', cam: 'xiaomi3big', cut: 'hole' },
-    mi14tp:     { s: 'slab', mat: 'glass', cam: 'xiaomi3big', cut: 'hole' },
-    mi15:       { s: 'slab', mat: 'glass', cam: 'xiaomi3big', cut: 'hole' },
-    mi15u:      { s: 'wide', mat: 'glass', cam: 'xiaomiCircle', cut: 'hole' },
-    mi16:       { s: 'slab', mat: 'glass', cam: 'xiaomi3big', cut: 'hole' },
-    mi16u:      { s: 'wide', mat: 'glass', cam: 'xiaomiCircle', cut: 'hole' },
-    px3pro:     { s: 'slab', mat: 'plastic', cam: 'pocoBar', cut: 'hole' },
-    px5:        { s: 'slab', mat: 'plastic', cam: 'pocoRect', cut: 'hole' },
-    px7:        { s: 'slab', mat: 'plastic', cam: 'pocoRect', cut: 'hole' },
-    px7p:       { s: 'slab', mat: 'glass', cam: 'pocoRect', cut: 'hole' },
-    pf5:        { s: 'slab', mat: 'glass', cam: 'pocoRect', cut: 'hole' },
-    pf7:        { s: 'slab', mat: 'glass', cam: 'pocoRect', cut: 'hole' },
-    pf7p:       { s: 'slab', mat: 'glass', cam: 'pocoRect', cut: 'hole' },
-    pf8:        { s: 'slab', mat: 'glass', cam: 'pocoRect', cut: 'hole' },
-    mixflip2:   { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-
-    // ---------------- Others ----------------
-    p30pro:     { s: 'slab', mat: 'glass', cam: 'huaweiBar', cut: 'drop' },
-    p40:        { s: 'slab', mat: 'glass', cam: 'huaweiRect', cut: 'hole' },
-    pura70:     { s: 'tall', mat: 'glass', cam: 'huaweiTri', cut: 'hole' },
-    pura80:     { s: 'tall', mat: 'glass', cam: 'huaweiTri', cut: 'hole' },
-    mate70:     { s: 'wide', mat: 'glass', cam: 'huaweiCircle', cut: 'hole' },
-    matex6:     { s: 'book', mat: 'glass', cam: 'huaweiCircle', cut: 'hole', fold: 'book' },
-    nova9:      { s: 'slab', mat: 'glass', cam: 'novaPill', cut: 'hole' },
-    nova13:     { s: 'slab', mat: 'glass', cam: 'novaPill', cut: 'hole' },
-    h8x:        { s: 'tall', mat: 'plastic', cam: 'honorBlock', cut: 'notch' },
-    h50:        { s: 'slab', mat: 'glass', cam: 'honorBlock', cut: 'hole' },
-    h200:       { s: 'slab', mat: 'glass', cam: 'honorBlock', cut: 'hole' },
-    h400:       { s: 'slab', mat: 'glass', cam: 'honorBlock', cut: 'hole' },
-    magic5:     { s: 'slab', mat: 'glass', cam: 'honorCircle', cut: 'hole' },
-    hm7p:       { s: 'wide', mat: 'glass', cam: 'honorCircle', cut: 'hole' },
-    hm8p:       { s: 'wide', mat: 'glass', cam: 'honorCircle', cut: 'hole' },
-    mv3:        { s: 'book', mat: 'glass', cam: 'honorCircle', cut: 'hole', fold: 'book' },
-    mv5:        { s: 'book', mat: 'glass', cam: 'honorCircle', cut: 'hole', fold: 'book' },
-    pixel6:     { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel7pro:  { s: 'wide', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel8a:    { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel9:     { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel9pro:  { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel9pf:   { s: 'book', mat: 'matte', cam: 'pixel9Fold', cut: 'hole', fold: 'book' },
-    pixel10:    { s: 'slab', mat: 'glass', cam: 'pixel10Bar', cut: 'hole' },
-    pixel10pro: { s: 'slab', mat: 'glass', cam: 'pixel10Bar', cut: 'hole' },
-    pixel10xl:  { s: 'wide', mat: 'glass', cam: 'pixel10Bar', cut: 'hole' },
-    pixel10pf:  { s: 'book', mat: 'matte', cam: 'pixel9Fold', cut: 'hole', fold: 'book' },
-    pixel10a:   { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    op9:        { s: 'slab', mat: 'glass', cam: 'xiaomi2', cut: 'hole' },
-    op11:       { s: 'wide', mat: 'glass', cam: 'oneplusCircle', cut: 'hole' },
-    op13:       { s: 'wide', mat: 'glass', cam: 'oneplusCircle', cut: 'hole' },
-    op13r:      { s: 'slab', mat: 'glass', cam: 'oneplusCircle', cut: 'hole' },
-    op15:       { s: 'tall', mat: 'glass', cam: 'oneplusCircle', cut: 'hole' },
-    nord4:      { s: 'slab', mat: 'plastic', cam: 'nordPill', cut: 'hole' },
-    nothing1:   { s: 'slab', mat: 'glass', cam: 'nothingDual', cut: 'hole' },
-    np2a:       { s: 'slab', mat: 'glass', cam: 'nothingDual', cut: 'hole' },
-    np3:        { s: 'slab', mat: 'glass', cam: 'nothingTri', cut: 'hole' },
-    np3a:       { s: 'slab', mat: 'glass', cam: 'nothingTri', cut: 'hole' },
-    cmf2:       { s: 'slab', mat: 'plastic', cam: 'nothingDual', cut: 'hole' },
-    realme8:    { s: 'slab', mat: 'plastic', cam: 'xiaomi3rect', cut: 'hole' },
-    r14p:       { s: 'slab', mat: 'plastic', cam: 'circleSmall', cut: 'hole' },
-    gt7:        { s: 'slab', mat: 'glass', cam: 'realmeCircle', cut: 'hole' },
-    gt7p:       { s: 'slab', mat: 'glass', cam: 'realmeCircle', cut: 'hole' },
-    p3u:        { s: 'slab', mat: 'plastic', cam: 'realmeCircle', cut: 'hole' },
-    reno8:      { s: 'slab', mat: 'glass', cam: 'oppoPill', cut: 'hole' },
-    reno12:     { s: 'slab', mat: 'glass', cam: 'oppoPill', cut: 'hole' },
-    fx8:        { s: 'slab', mat: 'glass', cam: 'oppoCircle', cut: 'hole' },
-    fx8p:       { s: 'slab', mat: 'glass', cam: 'oppoCircle', cut: 'hole' },
-    fn5:        { s: 'book', mat: 'glass', cam: 'oppoCircle', cut: 'hole', fold: 'book' },
-    vivo27:     { s: 'slab', mat: 'glass', cam: 'vivoSquare', cut: 'hole' },
-    v40:        { s: 'slab', mat: 'glass', cam: 'vivoSquare', cut: 'hole' },
-    y29:        { s: 'slab', mat: 'plastic', cam: 'vivoSquare', cut: 'drop' },
-    x200p:      { s: 'wide', mat: 'glass', cam: 'vivoCircle', cut: 'hole' },
-    x200u:      { s: 'wide', mat: 'glass', cam: 'vivoCircle', cut: 'hole' },
-    xf3p:       { s: 'book', mat: 'glass', cam: 'vivoCircle', cut: 'hole', fold: 'book' },
-    xperia10iv: { s: 'tall', mat: 'plastic', cam: 'sonyBar', cut: 'bezels' },
-    xp1vii:     { s: 'tall', mat: 'glass', cam: 'sonyBar', cut: 'bezels' },
-    xp10vii:    { s: 'tall', mat: 'plastic', cam: 'sonyBar', cut: 'bezels' },
-    rog6:       { s: 'slab', mat: 'glass', cam: 'rogRect', cut: 'hole' },
-    rog9:       { s: 'slab', mat: 'glass', cam: 'rogRect', cut: 'hole' },
-    rog9p:      { s: 'slab', mat: 'glass', cam: 'rogRect', cut: 'hole' },
-    razr50:     { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    razr60u:    { s: 'flip', mat: 'glass', cam: 'flipDual', cut: 'hole', fold: 'clamshell' },
-    edge60p:    { s: 'slab', mat: 'plastic', cam: 'circleSmall', cut: 'hole' },
-    motog85:    { s: 'slab', mat: 'plastic', cam: 'circleSmall', cut: 'hole' },
-    camon40:    { s: 'slab', mat: 'plastic', cam: 'circleSmall', cut: 'hole' },
-    note50:     { s: 'slab', mat: 'plastic', cam: 'circleSmall', cut: 'hole' },
-    phantomv2:  { s: 'book', mat: 'glass', cam: 'circleSmall', cut: 'hole', fold: 'book' },
-    zeroflip:   { s: 'flip', mat: 'glass', cam: 'circleSmall', cut: 'hole', fold: 'clamshell' }
-  };
-
-  root.PHONE_SPEC = SPEC;
-})(window);
-
-
-/* ===== phone.js ===== */
-/* ============================================================
-   MIDE — отрисовка телефонов на SVG.
-   У каждой модели свой паспорт: форма корпуса, блок камеры,
-   вырез, материал, лого и пропорции. Фотографии не используются.
-   ============================================================ */
-(function (root) {
-  'use strict';
-
-  const COLORS = {
-    'чёрный': [220, 10, 16], 'белый': [40, 5, 92], 'серый': [215, 6, 46],
-    'титановый': [34, 12, 56], 'синий': [214, 52, 34], 'зелёный': [150, 28, 30],
-    'красный': [2, 60, 38], 'розовый': [336, 42, 44], 'фиолетовый': [268, 40, 30]
-  };
-
-  const MATERIAL = {
-    glass: { sheen: 0.13, edge: 'rgba(255,255,255,.26)' },
-    plastic: { sheen: 0.03, edge: 'rgba(255,255,255,.10)' },
-    titanium: { sheen: 0.18, edge: 'rgba(255,236,205,.28)' }
-  };
-
-  // паспорт модели: пропорции, материал, вырез (см. phone_spec.js)
-  const SHAPES = {
-    se: { w: 62, h: 120, r: 9 },
-    mini: { w: 58, h: 126, r: 10 },
-    slim: { w: 60, h: 142, r: 11 },
-    slab: { w: 64, h: 138, r: 11 },
-    tall: { w: 66, h: 142, r: 11 },
-    wide: { w: 70, h: 146, r: 11 },
-    flip: { w: 62, h: 130, r: 9, fold: 'clamshell' },
-    book: { w: 84, h: 148, r: 10, fold: 'book' }
-  };
-
-  function spec(m) {
-    const S = root.PHONE_SPEC || {};
-    let s = S[m.id];
-    if (!s) {
-      const n = m.name;
-      const size = m.fold ? (/Flip|Razr/.test(n) ? 'flip' : 'book')
-        : /iPhone SE|iPhone 8/.test(n) ? 'se'
-        : /Pro Max|Ultra/.test(n) ? 'wide'
-        : /Plus/.test(n) ? 'wide'
-        : /mini/.test(n) ? 'mini'
-        : /Air/i.test(n) ? 'slim' : 'slab';
-      s = {
-        s: size,
-        mat: m.brand === 'Apple' ? 'glass' : 'plastic',
-        cam: m.cam || 'xiaomi2',
-        cut: m.notch || 'hole',
-        fold: size === 'flip' ? 'clamshell' : size === 'book' ? 'book' : null
-      };
-    }
-    return s;
-  }
-
-  function shapeOf(m) {
-    const sp = spec(m);
-    const base = SHAPES[sp.s] || SHAPES.slab;
-    return { w: base.w, h: base.h, r: base.r, fold: sp.fold || base.fold || null, spec: sp };
-  }
-
-  function materialOf(m, color) {
-    if (/титановый/.test(color || '')) return 'titanium';
-    return 'glass';
-  }
-
-  // ---------- тип блока камеры: берём из паспорта модели ----------
-  function camKind(m) {
-    return spec(m).cam || 'xiaomi2';
-  }
-
-  function lensSvg(x, y, r) {
-    return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r.toFixed(1) + '" fill="#07080c" stroke="rgba(160,185,215,.45)" stroke-width=".45"/>' +
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (r * .78).toFixed(1) + '" fill="#0d131b"/>' +
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (r * .47).toFixed(1) + '" fill="#18304f"/>' +
-      '<circle cx="' + (x - r * .2).toFixed(1) + '" cy="' + (y - r * .2).toFixed(1) + '" r="' + (r * .19).toFixed(1) + '" fill="rgba(170,205,245,.65)"/>';
-  }
-  // крупная линза Apple: тёмный объектив в светлой оправе, блик
-  function lensBig(x, y, r) {
-    return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r.toFixed(1) + '" fill="#0d0f12" stroke="rgba(190,200,210,.35)" stroke-width=".8"/>' +
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (r * .82).toFixed(1) + '" fill="#14161a"/>' +
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (r * .55).toFixed(1) + '" fill="#22262e"/>' +
-      '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (r * .34).toFixed(1) + '" fill="#0b1a35"/>' +
-      '<circle cx="' + (x - r * .18).toFixed(1) + '" cy="' + (y - r * .18).toFixed(1) + '" r="' + (r * .16).toFixed(1) + '" fill="rgba(150,180,240,.7)"/>';
-  }
-  function flashSvg(x, y, r) {
-    return '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + r + '" fill="#f7eccb" stroke="rgba(0,0,0,.28)" stroke-width=".3"/>';
-  }
-
-  function cameraSvg(m, g, bx, by, hue) {
-    const kind = camKind(m);
-    const x0 = bx + 4, y0 = by + 5;
-    const body = 'hsl(' + hue + ',15%,12%)';
-    const body2 = 'hsl(' + hue + ',18%,18%)';
-    const edge = 'rgba(255,255,255,.2)';
-    const W = g.w;
-    const box = function (x, y, w, h, r, fill) {
-      return '<rect x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + w + '" height="' + h +
-        '" rx="' + (r == null ? 6 : r) + '" fill="' + (fill || body) + '" stroke="' + edge + '" stroke-width=".5"/>';
-    };
-    const circle = function (cx, cy, r, fill) {
-      return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + (fill || body) +
-        '" stroke="' + edge + '" stroke-width=".5"/>';
-    };
-
-    switch (kind) {
-      // ---- Apple ----
-      case 'triSquare':      // 13/14/15/16 Pro: квадрат, три крупные линзы треугольником
-        return box(x0, y0, 27, 27, 9) + lensBig(x0 + 8, y0 + 8, 5.6) + lensBig(x0 + 20, y0 + 8, 5.6) +
-          lensBig(x0 + 8, y0 + 20, 5.6) + flashSvg(x0 + 20, y0 + 20, 2.2);
-      case 'dualSquare':     // обычный: квадрат, две по диагонали
-        return box(x0, y0, 24, 24, 7) + lensSvg(x0 + 7, y0 + 7, 3.7) + lensSvg(x0 + 17, y0 + 17, 3.7) +
-          flashSvg(x0 + 17.5, y0 + 6.5, 1.6);
-      case 'single':         // 8 / XR / SE: одна линза
-        return box(x0, y0, 15, 15, 5) + lensSvg(x0 + 7.5, y0 + 7.5, 4) + flashSvg(x0 + 14.5, y0 + 4, 1.6);
-      // iPhone 17 Pro: ПЛАСТИНА во всю ширину, внутри три крупные линзы,
-      // сверху вспышка, справа датчик LiDAR. Снизу отдельная панель.
-      case 'triBar': {
-        const w = W - 10, x = bx + 5, y = by + 5;
-        const plateH = g.h * 0.30;
-        return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + plateH.toFixed(1) + '" rx="10" fill="' + body2 + '" stroke="' + edge + '" stroke-width=".7"/>' +
-          // нижняя панель на спинке
-          '<rect x="' + (x + 2) + '" y="' + (y + plateH + 2.5).toFixed(1) + '" width="' + (w - 4) + '" height="' + (g.h - plateH - 10).toFixed(1) + '" rx="9" fill="rgba(255,255,255,.05)" stroke="' + edge + '" stroke-width=".6"/>' +
-          // три линзы: две слева одна правее (как у Apple)
-          lensBig(x + 10, y + 10, 6.6) + lensBig(x + 10, y + plateH - 10, 6.6) + lensBig(x + 20.5, y + plateH / 2, 6.2) +
-          // вспышка и LiDAR справа
-          flashSvg(x + w - 8, y + 8, 3) +
-          '<circle cx="' + (x + w - 8) + '" cy="' + (y + plateH - 8) + '" r="3.4" fill="#1a1d22" stroke="' + edge + '" stroke-width=".5"/>';
-      }
-      case 'dualBar': {      // iPhone 17: горизонтальная планка с двумя линзами
-        const w = W - 12, x = bx + 6, y = by + 5;
-        return box(x, y, w, 16, 6) + lensSvg(x + 9, y + 8, 3.4) + lensSvg(x + 21, y + 8, 3.4) +
-          flashSvg(x + w - 9, y + 8, 1.5);
-      }
-      case 'singleBar': {    // iPhone Air: одна линза в планке
-        const w = W - 12, x = bx + 6, y = by + 5;
-        return box(x, y, w, 14, 6) + lensSvg(x + 8, y + 7, 3.6) + flashSvg(x + 17, y + 7, 1.4);
-      }
-      case 'dualVertical':   // Fold: две линзы столбиком
-        return box(x0, y0, 14, 24, 6) + lensSvg(x0 + 7, y0 + 7, 3.4) + lensSvg(x0 + 7, y0 + 17, 3.4) +
-          flashSvg(x0 + 12, y0 + 2.5, 1.4);
-
-      // ---- Samsung ----
-      case 'galaxyA_small':  // A12/A26: узкий столбик камер в рамке
-        return box(x0, y0, 13, 30, 3) + lensSvg(x0 + 6.5, y0 + 7, 3) + lensSvg(x0 + 6.5, y0 + 15.5, 3) +
-          lensSvg(x0 + 6.5, y0 + 24, 3) + flashSvg(x0 + 10.5, y0 + 2.5, 1.2);
-      case 'galaxyA':        // A32/A52/A54: три отдельные линзы столбиком
-        return box(x0, y0, 12, 31, 3) + lensSvg(x0 + 6, y0 + 6.5, 3) + lensSvg(x0 + 6, y0 + 15.5, 3) +
-          lensSvg(x0 + 6, y0 + 24.5, 3);
-      case 'galaxyS':        // S20/S21/S22: пенал, линзы одна над другой
-        return box(x0, y0, 13, 31, 6.5) + lensSvg(x0 + 6.5, y0 + 7, 3.1) + lensSvg(x0 + 6.5, y0 + 16, 3.1) +
-          lensSvg(x0 + 6.5, y0 + 25, 3.1) + flashSvg(x0 + 11, y0 + 3, 1.1);
-      case 'galaxyS90':      // S23/S24/S25/S26: более крупные линзы без рамки
-        return box(x0, y0, 15, 33, 7) + lensSvg(x0 + 7.5, y0 + 7, 3.9) + lensSvg(x0 + 7.5, y0 + 17, 3.9) +
-          lensSvg(x0 + 7.5, y0 + 27, 3.9) + flashSvg(x0 + 12, y0 + 11.5, 1.2);
-      case 'galaxyUltra':    // Ultra/Note: пять датчиков и вспышка
-        return box(x0, y0, 17, 33, 8) + lensSvg(x0 + 8.5, y0 + 7, 4.1) + lensSvg(x0 + 8.5, y0 + 17, 4.1) +
-          lensSvg(x0 + 8.5, y0 + 27, 4.1) + flashSvg(x0 + 13.5, y0 + 12, 1.2) +
-          lensSvg(x0 + 8.5, y0 + 21.5, 1.7) + lensSvg(x0 + 13, y0 + 6, 1.7);
-      case 'flipDual':       // Flip: два блока в ряд
-        return box(x0 + 2, y0 + 1, 11, 21, 5) + lensSvg(x0 + 7.5, y0 + 6, 3.4) +
-          lensSvg(x0 + 7.5, y0 + 15, 2.2) + flashSvg(x0 + 17, y0 + 5, 1.5);
-
-      // ---- Xiaomi / POCO ----
-      case 'xiaomi1':
-        return box(x0, y0, 13, 13, 4) + lensSvg(x0 + 6.5, y0 + 6.5, 3.6) + flashSvg(x0 + 12, y0 + 3, 1.3);
-      case 'xiaomi2':
-        return box(x0, y0, 22, 14, 5) + lensSvg(x0 + 6, y0 + 7, 3.1) + lensSvg(x0 + 16, y0 + 7, 3.1) +
-          flashSvg(x0 + 11, y0 + 2.5, 1.1);
-      case 'xiaomi3rect':
-        return box(x0, y0, 24, 19, 6) + lensSvg(x0 + 6, y0 + 6, 3.1) + lensSvg(x0 + 16, y0 + 6, 3.1) +
-          lensSvg(x0 + 6, y0 + 14, 3.1) + flashSvg(x0 + 17, y0 + 14, 1.2);
-      case 'xiaomi3':        // современный квадрат с крупными линзами
-        return box(x0, y0, 26, 26, 8) + lensSvg(x0 + 7, y0 + 7, 3.9) + lensSvg(x0 + 19, y0 + 7, 3.9) +
-          lensSvg(x0 + 7, y0 + 19, 3.9) + flashSvg(x0 + 19, y0 + 19, 1.3);
-      case 'xiaomi3big':
-        return box(x0, y0, 28, 28, 9) + lensSvg(x0 + 8, y0 + 8, 4.4) + lensSvg(x0 + 21, y0 + 8, 4.4) +
-          lensSvg(x0 + 8, y0 + 21, 4.4) + flashSvg(x0 + 21, y0 + 21, 1.4);
-      case 'xiaomiCircle':   // Ultra: большой круг
-        return circle(x0 + 14, y0 + 14, 14) + lensSvg(x0 + 14, y0 + 6.5, 3.8) + lensSvg(x0 + 6, y0 + 19, 3.8) +
-          lensSvg(x0 + 22, y0 + 19, 3.8) + lensSvg(x0 + 14, y0 + 14, 2.2);
-      case 'pocoBar':        // POCO X3: широкая планка
-        return box(x0, y0, 28, 12, 5) + lensSvg(x0 + 7, y0 + 6, 3.1) + lensSvg(x0 + 21, y0 + 6, 3.1) +
-          flashSvg(x0 + 14, y0 + 6, 1.2);
-      case 'pocoRect':
-        return box(x0, y0, 25, 15, 5) + lensSvg(x0 + 7, y0 + 7.5, 3.3) + lensSvg(x0 + 18, y0 + 7.5, 3.3) +
-          flashSvg(x0 + 12.5, y0 + 2.6, 1.2);
-
-      // ---- Pixel ----
-      // Pixel 9/10 Pro Fold: высокий остров, две горизонтальные капсулы, вспышка справа
-      case 'pixel9Fold': {
-        const x = bx + 4, y = by + 5;
-        return '<rect x="' + x + '" y="' + y + '" width="30" height="30" rx="9" fill="' + body2 + '" stroke="' + edge + '" stroke-width=".5"/>' +
-          '<rect x="' + (x + 3) + '" y="' + (y + 3.5) + '" width="19" height="10" rx="5" fill="#0a0c10"/>' +
-          '<rect x="' + (x + 3) + '" y="' + (y + 16.5) + '" width="19" height="10" rx="5" fill="#0a0c10"/>' +
-          lensSvg(x + 7, y + 8.5, 3.3) + lensSvg(x + 17, y + 8.5, 3.1) +
-          lensSvg(x + 7, y + 21.5, 2.5) + lensSvg(x + 15, y + 21.5, 2.5) +
-          flashSvg(x + 26.5, y + 6.5, 1.8) +
-          '<circle cx="' + (x + 26.5) + '" cy="' + (y + 14) + '" r="1.1" fill="' + edge + '"/>';
-      }
-      case 'pixelBar': {
-        // Pixel 6–9: капсула-визор во всю ширину корпуса
-        const w = W - 10, x = bx + 5, y = by + 5, h = 17;
-        return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (h / 2) + '" fill="' + body2 + '" stroke="' + edge + '" stroke-width=".6"/>' +
-          // тёмная внутренняя капсула с линзами
-          '<rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="' + (w * 0.56) + '" height="' + (h - 4) + '" rx="' + ((h - 4) / 2) + '" fill="#0a0c10"/>' +
-          lensSvg(x + 8, y + h / 2, 3.6) + lensSvg(x + 17, y + h / 2, 3.1) +
-          '<circle cx="' + (x + 25) + '" cy="' + (y + h / 2) + '" r="1.1" fill="' + edge + '"/>' +
-          flashSvg(x + w - 7, y + h / 2, 3.2);
-      }
-      case 'pixel10Bar': {
-        // Pixel 10: визор с тремя линзами и отдельная вспышка справа
-        const w = W - 14, x = bx + 5, y = by + 5, h = 17;
-        return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (h / 2) + '" fill="' + body2 + '" stroke="' + edge + '" stroke-width=".6"/>' +
-          '<rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="' + (w - 4) + '" height="' + (h - 4) + '" rx="' + ((h - 4) / 2) + '" fill="#111318"/>' +
-          lensSvg(x + 8, y + h / 2, 3.5) + lensSvg(x + 17, y + h / 2, 3.5) + lensSvg(x + 25, y + h / 2, 3.0) +
-          flashSvg(x + w + 5, y + h / 2, 3.0);
-      }
-
-      // ---- Прочие бренды ----
-      case 'oneplusCircle':
-        return circle(x0 + 14, y0 + 14, 14) + lensSvg(x0 + 14, y0 + 6.5, 3.8) + lensSvg(x0 + 5.5, y0 + 19, 3.8) +
-          lensSvg(x0 + 22.5, y0 + 19, 3.8);
-      case 'circleSmall':
-        return circle(x0 + 10, y0 + 10, 10) + lensSvg(x0 + 10, y0 + 4.5, 3) + lensSvg(x0 + 5, y0 + 14, 3);
-      case 'realmeCircle':
-        return circle(x0 + 13, y0 + 13, 13) + lensSvg(x0 + 13, y0 + 6, 3.6) + lensSvg(x0 + 5, y0 + 17, 3.6) +
-          lensSvg(x0 + 21, y0 + 17, 3.6);
-      case 'oppoCircle':
-        return circle(x0 + 14, y0 + 14, 14) + lensSvg(x0 + 14, y0 + 7, 4) + lensSvg(x0 + 7, y0 + 19, 4);
-      case 'oppoPill':
-        return box(x0, y0, 15, 28, 7.5) + lensSvg(x0 + 7.5, y0 + 7, 3.7) + lensSvg(x0 + 7.5, y0 + 15.5, 2.2) +
-          lensSvg(x0 + 7.5, y0 + 22.5, 2.2);
-      case 'vivoSquare':
-        return box(x0, y0, 26, 16, 6) + lensSvg(x0 + 7, y0 + 8, 3.4) + lensSvg(x0 + 19, y0 + 8, 3.4) +
-          flashSvg(x0 + 13, y0 + 3, 1.2);
-      case 'vivoCircle':
-        return circle(x0 + 14, y0 + 14, 14) + lensSvg(x0 + 14, y0 + 6, 4) + lensSvg(x0 + 6, y0 + 18, 4) +
-          lensSvg(x0 + 22, y0 + 18, 4);
-      case 'honorCircle':
-        return circle(x0 + 13, y0 + 13, 13) + lensSvg(x0 + 13, y0 + 5.5, 3.6) + lensSvg(x0 + 5, y0 + 16, 3.6) +
-          lensSvg(x0 + 21, y0 + 16, 3.6) + flashSvg(x0 + 13, y0 + 20, 1.3);
-      case 'honorBlock':
-        return box(x0, y0, 16, 30, 6) + lensSvg(x0 + 8, y0 + 6, 3.2) + lensSvg(x0 + 8, y0 + 14, 3.2) +
-          lensSvg(x0 + 8, y0 + 22, 3.2) + flashSvg(x0 + 13.5, y0 + 10, 1.2);
-      case 'huaweiBar':
-        return box(x0, y0, 28, 14, 6) + lensSvg(x0 + 7, y0 + 7, 3.4) + lensSvg(x0 + 14.5, y0 + 7, 3.4) +
-          lensSvg(x0 + 22, y0 + 7, 3.4) + flashSvg(x0 + 14.5, y0 + 2.5, 1.2);
-      case 'huaweiRect':
-        return box(x0, y0, 17, 30, 6) + lensSvg(x0 + 8.5, y0 + 6, 3.4) + lensSvg(x0 + 8.5, y0 + 14, 3.4) +
-          lensSvg(x0 + 8.5, y0 + 22, 3.4) + flashSvg(x0 + 13.5, y0 + 10, 1.2);
-      case 'huaweiTri': {    // Pura: треугольник камер
-        return box(x0, y0, 28, 22, 10) + lensSvg(x0 + 14, y0 + 6.5, 3.8) + lensSvg(x0 + 7, y0 + 16, 3.8) +
-          lensSvg(x0 + 21, y0 + 16, 3.8) + flashSvg(x0 + 25.5, y0 + 4.5, 1.4);
-      }
-      case 'huaweiCircle':
-        return circle(x0 + 14, y0 + 14, 14) + lensSvg(x0 + 14, y0 + 6, 3.9) + lensSvg(x0 + 6, y0 + 18, 3.9) +
-          lensSvg(x0 + 22, y0 + 18, 3.9) + lensSvg(x0 + 14, y0 + 14, 2);
-      case 'novaPill':
-        return box(x0, y0, 15, 32, 7.5) + lensSvg(x0 + 7.5, y0 + 7, 3.8) + lensSvg(x0 + 7.5, y0 + 17, 3.8) +
-          lensSvg(x0 + 7.5, y0 + 27, 2.4);
-      case 'sonyBar':
-        return box(x0, y0, 9, 34, 4.5) + lensSvg(x0 + 4.5, y0 + 6, 2.7) + lensSvg(x0 + 4.5, y0 + 16, 2.7) +
-          lensSvg(x0 + 4.5, y0 + 26, 2.7);
-      case 'rogRect':
-        return box(x0, y0, 24, 18, 5) + lensSvg(x0 + 6, y0 + 6, 3.2) + lensSvg(x0 + 16, y0 + 6, 3.2) +
-          flashSvg(x0 + 11, y0 + 13, 1.3);
-      case 'nothingDual':
-      case 'nothingTri': {
-        const cy = y0 + 11;
-        const tri = kind === 'nothingTri';
-        return circle(x0 + 4, cy, 8) + '<circle cx="' + (x0 + 4) + '" cy="' + cy + '" r="4.2" fill="#0a0d12" stroke="rgba(255,255,255,.35)" stroke-width=".5"/>' +
-          circle(x0 + 22, cy, tri ? 6 : 8) + '<circle cx="' + (x0 + 22) + '" cy="' + cy + '" r="' + (tri ? 3 : 4.2) + '" fill="#0a0d12" stroke="rgba(255,255,255,.35)" stroke-width=".5"/>';
-      }
-      case 'nordPill':
-        return box(x0, y0, 17, 30, 8) + lensSvg(x0 + 8.5, y0 + 7, 3.6) + lensSvg(x0 + 8.5, y0 + 16, 3.6) +
-          flashSvg(x0 + 13.5, y0 + 24, 1.4);
-      default:
-        return box(x0, y0, 22, 14, 5) + lensSvg(x0 + 6, y0 + 7, 3) + lensSvg(x0 + 16, y0 + 7, 3);
-    }
-  }
-
-  // ---------- лого ----------
-  function logoSvg(m, g, bx, by) {
-    const cx = bx + g.w / 2;
-    const cy = by + g.h * (g.fold ? 0.86 : 0.76);
-    const dark = 'rgba(0,0,0,.34)';
-    const light = 'rgba(255,255,255,.45)';
-    const low = (COLORS[m.color || 'чёрный'][2] < 26);
-    const fill = low ? light : dark;
-    const txt = function (t, size, weight, letter, c) {
-      return '<text x="' + cx.toFixed(1) + '" y="' + cy.toFixed(1) + '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="' +
-        size + '" font-weight="' + (weight || 400) + '" letter-spacing="' + (letter || 0) + '" fill="' + (c || fill) + '">' + t + '</text>';
-    };
-    switch (m.brand) {
-      case 'Apple':
-        return '<g transform="translate(' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')" fill="' + fill + '">' +
-          '<ellipse cx="0" cy="0" rx="5.4" ry="6.4"/><path d="M1.2-6c-1 1.4-2.3 1.8-3 1.8.2-1.9 1.6-3.6 3-3.8z"/></g>';
-      case 'Samsung': return txt('SAMSUNG', 5.4, 700, 0.5);
-      case 'Honor': return txt('HONOR', 5.6, 700, 0.4);
-      case 'Huawei': return txt('HUAWEI', 5, 600, 0.5);
-      case 'Sony': return txt('SONY', 5.2, 700, 0.7);
-      case 'ASUS': return txt('ROG', 5.4, 800, 0.6);
-      case 'Google':
-        // буква G: кольцо с выноской вправо, как на Pixel
-        return '<g transform="translate(' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')" fill="none" stroke="' + fill +
-          '" stroke-width="2.2" stroke-linecap="butt">' +
-          '<path d="M5.4 -3.1 A6.2 6.2 0 1 0 6.2 0.2"/>' +
-          '<path d="M2.6 0.2 H6.2"/></g>';
-      case 'Nothing':
-        return '<g transform="translate(' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')" fill="none" stroke="' + fill + '" stroke-width=".9">' +
-          '<circle cx="-4.4" r="2"/><circle cx="4.4" r="2"/></g>';
-      case 'OnePlus':
-        return '<g transform="translate(' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')" stroke="' + fill + '" stroke-width="1" fill="none">' +
-          '<rect x="-5.4" y="-2.3" width="10.8" height="4.6" rx="2.3"/><path d="M0-1.2v2.4M-1.2 0h2.4"/></g>';
-      case 'OPPO':
-        return '<ellipse cx="' + cx + '" cy="' + (cy - 1.4) + '" rx="5.8" ry="2.7" fill="none" stroke="' + fill + '" stroke-width="1.1"/>';
-      case 'vivo':
-        return '<text x="' + cx + '" y="' + cy + '" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="5.8" fill="' + fill + '">vivo</text>';
-      case 'realme':
-      case 'Realme': return txt('realme', 5.2, 700);
-      case 'Xiaomi':
-        return '<rect x="' + (cx - 4.8) + '" y="' + (cy - 4.8) + '" width="9.6" height="9.6" rx="2.2" fill="#ff6900"/>' +
-          '<text x="' + cx + '" y="' + (cy + 1.9) + '" text-anchor="middle" font-family="Arial,sans-serif" font-size="5.2" font-weight="800" fill="#fff">mi</text>';
-      case 'POCO':
-        return txt('POCO', 5.4, 800, 0.4, '#ff6900');
-      case 'Motorola':
-        return '<g transform="translate(' + cx.toFixed(1) + ' ' + cy.toFixed(1) + ')" fill="none" stroke="' + fill + '" stroke-width="1">' +
-          '<circle r="4"/><path d="M-1.7 0h3.4"/></g>';
-      case 'Tecno':
-      case 'Infinix': return txt(m.brand.toUpperCase(), 4.6, 600, 0.4);
-      default: return '';
-    }
-  }
-
-  // ---------- трещины ----------
-  function rng(seed) {
-    let s = (Math.abs(seed) >>> 0) || 7;
-    return function () { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
-  }
-
-  function crackSvg(x, y, w, h, seed, strong) {
-    const r = rng(seed);
-    let d = '';
-    const centers = strong ? 3 : 2;
-    for (let c = 0; c < centers; c++) {
-      const cx = x + w * (0.15 + r() * 0.7), cy = y + h * (0.18 + r() * 0.64);
-      const rays = 6 + (r() * 4 | 0);
-      for (let i = 0; i < rays; i++) {
-        let px = cx, py = cy, ang = r() * Math.PI * 2;
-        d += 'M' + px.toFixed(1) + ' ' + py.toFixed(1);
-        const len = (strong ? 20 : 13) + r() * 12;
-        const steps = 3 + (r() * 3 | 0);
-        for (let k = 0; k < steps; k++) {
-          ang += (r() - 0.5) * 0.65;
-          px = Math.min(x + w - 1, Math.max(x + 1, px + Math.cos(ang) * len / steps));
-          py = Math.min(y + h - 1, Math.max(y + 1, py + Math.sin(ang) * len / steps));
-          d += ' L' + px.toFixed(1) + ' ' + py.toFixed(1);
-        }
-      }
-    }
-    return '<path d="' + d + '" fill="none" stroke="rgba(240,252,255,.85)" stroke-width=".75" stroke-linecap="round"/>' +
-      '<path d="' + d + '" fill="none" stroke="rgba(120,200,255,.2)" stroke-width="1.9" stroke-linecap="round"/>';
-  }
-
-  function scratchSvg(x, y, w, h, seed) {
-    const r = rng(seed + 91);
-    let d = '';
-    for (let i = 0; i < 8; i++) {
-      const px = x + r() * w, py = y + r() * h;
-      d += 'M' + px.toFixed(1) + ' ' + py.toFixed(1) + 'l' + ((r() - .5) * w * .4).toFixed(1) + ' ' + ((r() - .5) * h * .1).toFixed(1);
-    }
-    return '<path d="' + d + '" fill="none" stroke="rgba(255,255,255,.45)" stroke-width=".65" stroke-linecap="round"/>';
-  }
-
-  let seq = 0;
-
-  function draw(m, color, opts) {
-    opts = opts || {};
-    const side = opts.side || 'back';
-    const defects = opts.defects || [];
-    const seed = (opts.seed || 1) + 17;
-    const uid = 'p' + (++seq);
-    const g = shapeOf(m);
-    const mat = MATERIAL[materialOf(m, color)];
-    const bx = (100 - g.w) / 2, by = (150 - g.h) / 2;
-    const b = COLORS[color] || COLORS['синий'];
-    const hue = b[0], sat = b[1], light = b[2];
-
-    const c1 = 'hsl(' + hue + ',' + Math.max(3, sat - 8) + '%,' + Math.min(95, light + 24) + '%)';
-    const c2 = 'hsl(' + hue + ',' + sat + '%,' + light + '%)';
-    const c3 = 'hsl(' + hue + ',' + Math.max(3, sat - 3) + '%,' + Math.max(5, light - 15) + '%)';
-    const s = [];
-
-    s.push('<svg class="psvg" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">');
-    s.push('<defs>');
-    s.push('<linearGradient id="' + uid + 'b" x1="0" y1="0" x2=".85" y2="1">' +
-      '<stop offset="0" stop-color="' + c1 + '"/><stop offset=".45" stop-color="' + c2 + '"/>' +
-      '<stop offset="1" stop-color="' + c3 + '"/></linearGradient>');
-    s.push('<linearGradient id="' + uid + 'k" x1=".1" y1="0" x2=".9" y2="1">' +
-      '<stop offset="0" stop-color="#1c2634"/><stop offset=".55" stop-color="#06090d"/>' +
-      '<stop offset="1" stop-color="#111a24"/></linearGradient>');
-    s.push('<clipPath id="' + uid + 'c"><rect x="' + bx + '" y="' + by + '" width="' + g.w +
-      '" height="' + g.h + '" rx="' + g.r + '"/></clipPath>');
-    s.push('</defs>');
-
-    s.push('<rect x="' + bx + '" y="' + by + '" width="' + g.w + '" height="' + g.h + '" rx="' + g.r +
-      '" fill="url(#' + uid + 'b)" stroke="rgba(0,0,0,.45)" stroke-width=".5"/>');
-
-    if (side === 'back') back(s, m, g, bx, by, mat, hue, uid, defects, seed);
-    else front(s, m, g, bx, by, uid, defects, seed);
-
-    s.push('</svg>');
-    return s.join('');
-  }
-
-  function back(s, m, g, bx, by, mat, hue, uid, defects, seed) {
-    s.push('<rect x="' + (bx + 1) + '" y="' + (by + 1) + '" width="' + (g.w - 2) + '" height="' + (g.h - 2) +
-      '" rx="' + (g.r - 1) + '" fill="none" stroke="' + mat.edge + '" stroke-width=".65"/>');
-    s.push('<g clip-path="url(#' + uid + 'c)"><path d="M' + bx + ' ' + (by + g.h * .06) + ' L' +
-      (bx + g.w) + ' ' + (by - g.h * .08) + ' L' + (bx + g.w) + ' ' + (by + g.h * .28) + ' Z" fill="rgba(255,255,255,' +
-      mat.sheen + ')"/></g>');
-
-    if (g.fold) {
-      if (g.fold === 'clamshell') {
-        const my = by + g.h / 2;
-        s.push('<line x1="' + (bx + 2) + '" y1="' + my + '" x2="' + (bx + g.w - 2) + '" y2="' + my + '" stroke="rgba(0,0,0,.38)" stroke-width="1"/>');
-        s.push('<line x1="' + (bx + 2) + '" y1="' + (my + 1.4) + '" x2="' + (bx + g.w - 2) + '" y2="' + (my + 1.4) + '" stroke="rgba(255,255,255,.16)" stroke-width=".7"/>');
-      } else if (g.spec.cam === 'pixel9Fold') {
-        // у Pixel Fold спинку не режет линия: сгиб тоньше и прерывается под камерой
-        const fx = bx + g.w / 2;
-        s.push('<line x1="' + fx + '" y1="' + (by + g.h * .55) + '" x2="' + fx + '" y2="' + (by + g.h * .78) +
-          '" stroke="rgba(0,0,0,.16)" stroke-width=".8"/>');
-      } else {
-        const fx = bx + g.w / 2;
-        s.push('<line x1="' + fx + '" y1="' + (by + 2) + '" x2="' + fx + '" y2="' + (by + g.h * .62) + '" stroke="rgba(0,0,0,.38)" stroke-width="1"/>');
-        s.push('<line x1="' + (fx + 1.3) + '" y1="' + (by + 2) + '" x2="' + (fx + 1.3) + '" y2="' + (by + g.h * .62) + '" stroke="rgba(255,255,255,.14)" stroke-width=".7"/>');
-      }
-    }
-
-    s.push(cameraSvg(m, g, bx, by, hue));
-    s.push(logoSvg(m, g, bx, by));
-
-    const plastic = /^Galaxy A|Redmi|POCO|Moto|Camon|Note ?50|Edge|CMF|Realme/.test(m.name);
-    if (!plastic && defects.indexOf('back') >= 0) s.push(crackSvg(bx + 5, by + g.h * .3, g.w - 10, g.h * .58, seed, false));
-    if (defects.indexOf('frame') >= 0 || (plastic && defects.indexOf('back') >= 0)) s.push(scratchSvg(bx + 5, by + g.h * .32, g.w - 10, g.h * .6, seed));
-    if (defects.indexOf('water') >= 0) {
-      s.push('<ellipse cx="' + (bx + g.w * .34).toFixed(1) + '" cy="' + (by + g.h * .72).toFixed(1) + '" rx="8" ry="5.5" fill="rgba(190,155,70,.18)"/>');
-      s.push('<ellipse cx="' + (bx + g.w * .63).toFixed(1) + '" cy="' + (by + g.h * .6).toFixed(1) + '" rx="5.5" ry="4" fill="rgba(190,155,70,.14)"/>');
-    }
-  }
-
-  function front(s, m, g, bx, by, uid, defects, seed) {
-    const ix = bx + 2, iy = by + 2, iw = g.w - 4, ih = g.h - 4;
-    const rr = Math.max(4, g.r - 1.5);
-    s.push('<defs><clipPath id="' + uid + 'e"><rect x="' + ix + '" y="' + iy + '" width="' + iw + '" height="' + ih + '" rx="' + rr + '"/></clipPath></defs>');
-    s.push('<rect x="' + ix + '" y="' + iy + '" width="' + iw + '" height="' + ih + '" rx="' + rr + '" fill="url(#' + uid + 'k)"/>');
-    s.push('<g clip-path="url(#' + uid + 'e)">');
-    s.push('<ellipse cx="' + (ix + iw * .5).toFixed(1) + '" cy="' + (iy + ih * .68).toFixed(1) + '" rx="' + (iw * .55).toFixed(1) + '" ry="' + (ih * .36).toFixed(1) + '" fill="rgba(52,92,198,.5)"/>');
-    s.push('<ellipse cx="' + (ix + iw * .34).toFixed(1) + '" cy="' + (iy + ih * .2).toFixed(1) + '" rx="' + (iw * .3).toFixed(1) + '" ry="' + (ih * .15).toFixed(1) + '" fill="rgba(176,62,148,.3)"/>');
-    s.push('<text x="' + (ix + 3) + '" y="' + (iy + 7).toFixed(1) + '" font-family="Arial,sans-serif" font-size="3.1" fill="rgba(255,255,255,.85)">9:41</text>');
-    s.push('<rect x="' + (ix + iw - 9).toFixed(1) + '" y="' + (iy + 4) + '" width="4.4" height="3" rx=".8" fill="rgba(255,255,255,.8)"/>');
-    s.push('<rect x="' + (ix + iw - 15).toFixed(1) + '" y="' + (iy + 5) + '" width="4" height="2.4" rx=".6" fill="rgba(255,255,255,.5)"/>');
-
-    const cols = 4, rows = 3, pad = 5;
-    const cw = (iw - pad * (cols + 1)) / cols;
-    for (let c = 0; c < cols; c++) {
-      for (let k = 0; k < rows; k++) {
-        const ax = ix + pad + c * (cw + pad), ay = iy + ih * .22 + k * (cw + pad);
-        s.push('<rect x="' + ax.toFixed(1) + '" y="' + ay.toFixed(1) + '" width="' + cw.toFixed(1) + '" height="' + cw.toFixed(1) +
-          '" rx="' + (cw * .26).toFixed(1) + '" fill="rgba(255,255,255,' + (0.09 + ((c + k) % 3) * 0.05).toFixed(2) + ')"/>');
-      }
-    }
-    s.push('<rect x="' + (ix + 5) + '" y="' + (iy + ih - 16).toFixed(1) + '" width="' + (iw - 10) + '" height="' + (cw + 4).toFixed(1) +
-      '" rx="' + (cw * .36).toFixed(1) + '" fill="rgba(255,255,255,.13)"/>');
-    for (let c = 0; c < 4; c++) {
-      s.push('<rect x="' + (ix + 8 + c * (cw + 3)).toFixed(1) + '" y="' + (iy + ih - 14).toFixed(1) + '" width="' + cw.toFixed(1) +
-        '" height="' + cw.toFixed(1) + '" rx="' + (cw * .26).toFixed(1) + '" fill="rgba(255,255,255,.2)"/>');
-    }
-    if (g.fold) {
-      if (g.fold === 'clamshell') {
-        s.push('<line x1="' + ix + '" y1="' + (by + g.h / 2) + '" x2="' + (ix + iw) + '" y2="' + (by + g.h / 2) + '" stroke="rgba(0,0,0,.45)" stroke-width=".9"/>');
-      } else {
-        s.push('<line x1="' + (bx + g.w / 2) + '" y1="' + iy + '" x2="' + (bx + g.w / 2) + '" y2="' + (iy + ih) + '" stroke="rgba(0,0,0,.4)" stroke-width=".8"/>');
-      }
-    }
-    s.push('</g>');
-
-    const cx = bx + g.w / 2;
-    const nt = g.spec.cut;
-    if (nt === 'notch') s.push('<path d="M' + (cx - 12).toFixed(1) + ' ' + iy + ' h24 v3 a3 3 0 0 1 -3 3 h-18 a3 3 0 0 1 -3 -3 z" fill="#03060a"/>');
-    else if (nt === 'island') s.push('<rect x="' + (cx - 8.5).toFixed(1) + '" y="' + (iy + 4) + '" width="17" height="5.5" rx="2.75" fill="#03060a"/>');
-    else if (nt === 'hole') s.push('<circle cx="' + cx.toFixed(1) + '" cy="' + (iy + 7) + '" r="2.5" fill="#03060a"/>');
-    else if (nt === 'drop') s.push('<circle cx="' + cx.toFixed(1) + '" cy="' + (iy + 6) + '" r="3" fill="#03060a"/>');
-    else if (nt === 'chin') s.push('<circle cx="' + cx.toFixed(1) + '" cy="' + (by + g.h - 6) + '" r="4.4" fill="none" stroke="rgba(255,255,255,.3)" stroke-width=".9"/>');
-    else if (nt === 'bezels') {
-      // Sony: полные рамки сверху и снизу
-      s.push('<rect x="' + ix + '" y="' + (iy + 3) + '" width="' + iw + '" height="7" rx="2" fill="rgba(0,0,0,.55)"/>');
-      s.push('<rect x="' + ix + '" y="' + (by + g.h - 12) + '" width="' + iw + '" height="8" rx="2" fill="rgba(0,0,0,.55)"/>');
-    }
-
-    if (defects.indexOf('screen_dead') >= 0) {
-      s.push(crackSvg(ix + 2, iy + 2, iw - 4, ih - 4, seed, true));
-      const r = rng(seed * 3);
-      for (let i = 0; i < 18; i++) {
-        s.push('<rect x="' + (ix + r() * iw).toFixed(1) + '" y="' + (iy + r() * ih).toFixed(1) + '" width="1.3" height="1.3" fill="rgba(120,205,255,.8)"/>');
-      }
-    } else if (defects.indexOf('screen_crack') >= 0) {
-      s.push(crackSvg(ix + 2, iy + 2, iw - 4, ih - 4, seed, false));
-    }
-  }
-
-  root.PHONE = { draw: draw, shapeOf: shapeOf, COLORS: COLORS };
-})(window);
-
-
 /* ===== ai.js ===== */
 /* ============================================================
    AVITO FLIP — диалоги.
@@ -3977,9 +3366,9 @@ window.DESK_PHOTO = [];
     return String(n);
   }
 
-    // отрисовка телефонов вынесена в phone.js
-  function phoneSVG(model, phoneColor, opts) {
-    return root.PHONE.draw(model, phoneColor, opts);
+  // нарисованных телефонов больше нет — только фото из MODEL_PHOTO
+  function phoneSVG() {
+    return '';
   }
 
   // только фотографии: телефон + случайный стол под каждое объявление
@@ -4457,9 +3846,7 @@ const App = {
 
       if (mp) {
         const m = E.MODELS_BY_ID[mp.modelId];
-        const mpPic = root.MODEL_PHOTO && root.MODEL_PHOTO[m.id];
-        html += '<div class="main-phone">' +
-          (mpPic ? '<img class="mp-photo" src="data:image/jpeg;base64,' + mpPic + '" alt="">' : '') +
+        html += '<div class="main-phone">' + root.PHOTO.ph(m.id, 0, 0, 'mp-photo') +
           '<div class="mpi"><div class="tiny muted">Мой телефон</div>' +
           '<div class="mpn">' + esc(m.name) + ' ' + mp.storage + ' ГБ</div>' +
           '<div class="mps">' + esc(mp.color) + ' · ' + money(E.playerValue(mp)) + '</div></div>' +
@@ -4701,18 +4088,20 @@ const App = {
 
   /* ---------- галерея фото ---------- */
   App.galleryHTML = function (m, listing) {
-    const defs = (listing.defects || []).filter(d => d.disclosed).map(d => d.key);
-    const seed = (listing.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), 0);
+    const fr = root.PHOTO.ph(m.id);
+    const bk = root.PHOTO.ph(m.id);
     return '<div class="gallery" id="gallery">' +
       '<div class="gallery-view" id="gal-view">' +
-      '<div class="slide">' + App.photoHTML(m, listing, defs, seed) + '</div>' +
-      '<div class="slide">' + App.backHTML(m, listing.color, defs, seed) + '</div>' +
+      '<div class="slide">' + fr + '</div>' +
+      '<div class="slide">' + bk + '</div>' +
       '</div>' +
       '<div class="gallery-nav"><button id="gal-prev">‹</button><button id="gal-next">›</button></div>' +
       '<div class="gallery-dots"><i class="on"></i><i></i></div>' +
-      '<div class="gallery-count">1 / ' + (listing.photos || 2) + '</div>' +
+      '<div class="gallery-count">1 / 2</div>' +
       '</div>';
   };
+
+
 
 
   // фото объявления: как есть, со своим фоном, без вырезки
@@ -4720,12 +4109,13 @@ const App = {
     return '<div class="listing-photo">' + root.PHOTO.ph(m.id) + '</div>';
   };
 
-  App.frontHTML = function (m, color, defects, seed) {
-    return App.phoneSVG(m, color, { side: 'front', defects: defects || [], seed: seed });
+  // в интерфейсе только фотографии, никаких нарисованных телефонов
+  App.frontHTML = function (m) {
+    return root.PHOTO.ph(m.id);
   };
 
-  App.backHTML = function (m, color, defects, seed) {
-    return App.phoneSVG(m, color, { side: 'back', defects: defects || [], seed: seed });
+  App.backHTML = function (m) {
+    return root.PHOTO.ph(m.id);
   };
 
   App.overlayDefects = function (m, defects, seed) {
