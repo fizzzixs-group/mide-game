@@ -783,7 +783,9 @@ html, body { background: var(--bg); }
   box-shadow: none; transition: border-color .18s, transform .18s;
 }
 .card::after { content: none; }
-.card.anim { animation: mideRise .34s cubic-bezier(.2,.7,.3,1) backwards; animation-delay: calc(var(--i, 0) * 16ms); }
+/* карточки видны всегда: анимация только украшение, без начальной прозрачности */
+.card.anim { animation: mideRise .3s cubic-bezier(.2,.7,.3,1); animation-delay: calc(var(--i, 0) * 14ms); }
+.card { opacity: 1 !important; }
 @keyframes mideRise {
   from { opacity: 0; transform: translateY(9px); }
   to { opacity: 1; transform: none; }
@@ -4284,6 +4286,12 @@ const App = {
       }
       html += '</div>';
       box.innerHTML = html;
+      // страховка: если анимация не сработала, карточки всё равно должны быть видны
+      setTimeout(() => {
+        document.querySelectorAll('.card.anim').forEach(c => {
+          if (getComputedStyle(c).opacity === '0') c.style.opacity = '1';
+        });
+      }, 900);
       const s = $('#feed-search');
       if (s) {
         let t = null;
