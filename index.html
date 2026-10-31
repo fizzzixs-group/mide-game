@@ -1013,41 +1013,6 @@ html, body { background: var(--bg); }
   <div class="deal-flash" id="flash"></div>
 </div>
 
-<script>window.MIDE_BACKEND = '';</script>
-
-<div class="early" id="early" hidden>
-  <div class="early-box">
-    <div class="early-kick">РАННИЙ ДОСТУП</div>
-    <h1>Mide Simulator<br><span>в бете</span></h1>
-    <p class="early-lead">Игра в раннем доступе. Чтобы играть — оформи доступ за <b>1 звезду</b> (тестовый тариф).</p>
-    <ul class="early-list">
-      <li>Полный доступ к бете — все функции</li>
-      <li>Живые диалоги с настоящим ИИ, а не заготовками</li>
-      <li>Бонусы при релизе</li>
-    </ul>
-    <button class="early-btn" id="early-pay">Открыть чат с ботом — 1 ★</button>
-    <div class="early-note" id="early-note"></div>
-  </div>
-</div>
-
-<style>
-  .early { position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center;
-    background: #0b0c0e; color: #fff; padding: 22px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-  .early[hidden] { display: none; }
-  .early-box { max-width: 420px; width: 100%; }
-  .early-kick { font-size: 10.5px; letter-spacing: .28em; color: #8d939b; font-weight: 700; }
-  .early h1 { font-size: 34px; line-height: 1.05; letter-spacing: -.03em; margin: 10px 0 14px; font-weight: 800; }
-  .early h1 span { color: #8d939b; font-weight: 600; }
-  .early-lead { font-size: 13.5px; line-height: 1.5; color: #b9bec5; margin: 0 0 14px; }
-  .early-lead b { color: #fff; }
-  .early-list { margin: 0 0 20px; padding: 0; list-style: none; }
-  .early-list li { font-size: 13px; color: #d4d8dd; padding: 8px 0 8px 22px; position: relative; border-bottom: 1px solid rgba(255,255,255,.07); }
-  .early-list li::before { content: ''; position: absolute; left: 2px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
-  .early-btn { width: 100%; padding: 15px; border: 0; border-radius: 13px; background: #fff; color: #0b0c0e; font-size: 15px; font-weight: 800; cursor: pointer; }
-  .early-btn:disabled { opacity: .6; }
-  .early-note { margin-top: 12px; font-size: 11.5px; color: #8d939b; line-height: 1.45; }
-</style>
-
 <script>
 
 /* ===== data.js ===== */
@@ -1583,9 +1548,32 @@ html, body { background: var(--bg); }
     });
   }
 
+  // живые вступительные фразы покупателей
+  const OPENERS = [
+    'Здравствуйте! Телефон ещё актуален?',
+    'Добрый день, продаёте ещё?',
+    'Привет! Аппарат ещё в наличии?',
+    'Здравствуйте. Цена окончательная?',
+    'Добрый вечер. А можно ещё фото?',
+    'Здрасьте! Я по объявлению про телефон.',
+    'Здравствуйте! А торг уместен?',
+    'Добрый день. Почему продаёте?',
+    'Здравствуйте! А батарея родная?',
+    'Привет. А чек остался?'
+  ];
+
+  // фразы покупателей на торг
+  const HAGGLES = [
+    'А скинете немного?',
+    'Может, договоримся?',
+    'А за наличку скидку сделаете?',
+    'Видел такой дешевле. Уступите?',
+    'Я близко живу, могу приехать сегодня — скидка будет?'
+  ];
+
   root.DATA = {
     TIER_NAMES, DEFECTS, DEFECT_KEYS, REPAIR_COST, REPAIR_NAMES, PART_QUALITY,
-    MODELS, SELLER_TYPES, BUYERS, SELLER_NAMES, CITIES, METRO, COLORS, CHECKS
+    MODELS, SELLER_TYPES, BUYERS, OPENERS, HAGGLES, SELLER_NAMES, CITIES, METRO, COLORS, CHECKS
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = root.DATA;
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -2181,10 +2169,17 @@ html, body { background: var(--bg); }
       stage: 'chat',
       msgs: 0
     };
-    b.offer = Math.max(300, round100(Math.min(
-      listing.ask * (0.68 + (1 - clamp(persona.knows, 0, 1)) * 0.22 + rndRange(-0.03, 0.05)),
-      budget * rndRange(0.9, 1.0)
-    )));
+    // 50-60% покупателей идут по цене объявления, остальные торгуются
+    const agreeShare = 0.5 + clamp((persona.budget[1] - 0.9) * 2, 0, 0.1);
+    b.agreesAsIs = chance(agreeShare);
+    if (b.agreesAsIs) {
+      b.offer = listing.ask;
+    } else {
+      b.offer = Math.max(300, round100(Math.min(
+        listing.ask * (0.70 + (1 - clamp(persona.knows, 0, 1)) * 0.20 + rndRange(-0.03, 0.05)),
+        budget * rndRange(0.9, 1.0)
+      )));
+    }
     listing.buyers.push(b);
     return b;
   }
@@ -2598,6 +2593,346 @@ html, body { background: var(--bg); }
 })(typeof window !== 'undefined' ? window : globalThis);
 
 
+/* ===== phone.js ===== */
+/* ============================================================
+   MIDE — отрисовка телефонов по реальным моделям.
+   Дизайн собран по фото и схемам производителей:
+   блок камер, вырез экрана, пропорции, лого, цвета.
+   ============================================================ */
+(function (root) {
+  'use strict';
+
+  // ---------- оттенки реальных цветов ----------
+  // h: тон, s: насыщенность, l: вес цвета
+  const COLORS = {
+    'чёрный': [215, 14, 30], 'белый': [40, 8, 84], 'серый': [215, 10, 44],
+    'титановый': [38, 18, 52], 'синий': [216, 58, 42], 'зелёный': [146, 42, 34],
+    'красный': [2, 62, 44], 'розовый': [335, 55, 44], 'фиолетовый': [272, 50, 38]
+  };
+
+  function hsl(h, s, l) { return 'hsl(' + h + ' ' + s + '% ' + l + '%)'; }
+  function color(phoneColor, shift) {
+    const c = COLORS[phoneColor] || COLORS['синий'];
+    return [c[0], c[1], Math.max(12, Math.min(90, c[2] + (shift || 0)))];
+  }
+
+  // ---------- лого ----------
+  function logo(brand, w, x, y) {
+    const cx = x + w / 2;
+    const dark = 'rgba(0,0,0,.32)';
+    const light = 'rgba(255,255,255,.75)';
+    switch (brand) {
+      case 'Apple':
+        return '<g transform="translate(' + cx + ' ' + y + ')" fill="' + dark + '">' +
+          '<ellipse cx="0" cy="1" rx="6.2" ry="7.4"/>' +
+          '<path d="M1.6 -7.2c-1.2 1.6-2.6 2.2-3.4 2.2.2-2.2 1.8-4.2 3.4-4.4z"/>' +
+          '</g>';
+      case 'Samsung':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="6.4" letter-spacing="0.6" ' +
+          'font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="' + dark + '">SAMSUNG</text>';
+      case 'Google': {
+        let g = '<g transform="translate(' + cx + ' ' + y + ')">';
+        const cols = ['#4285F4', '#EA4335', '#FBBC05', '#34A853'];
+        for (let i = 0; i < 4; i++) {
+          g += '<rect x="' + (-6 + i * 3) + '" y="-1.4" width="2.6" height="2.8" rx="1.2" fill="' + cols[i] + '" opacity=".85"/>';
+        }
+        return g + '</g>';
+      }
+      case 'Nothing':
+        return '<g transform="translate(' + cx + ' ' + y + ')" stroke="rgba(255,255,255,.55)" stroke-width="1.1" fill="none">' +
+          '<circle cx="-5" cy="0" r="2.2"/><circle cx="5" cy="0" r="2.2"/><path d="M-2.8 0h5.6"/></g>';
+      case 'OnePlus':
+        return '<g transform="translate(' + cx + ' ' + y + ')">' +
+          '<rect x="-6" y="-2.6" width="12" height="5.2" rx="2.6" fill="none" stroke="' + dark + '" stroke-width="1.2"/>' +
+          '<path d="M0 -1.4v2.8M-1.4 0h2.8" stroke="' + dark + '" stroke-width="1.2"/></g>';
+      case 'Huawei':
+        return '<g transform="translate(' + cx + ' ' + y + ')" fill="' + dark + '">' +
+          '<path d="M-6 2.5c0-3.4 2.7-6.2 6-6.2s6 2.8 6 6.2z" opacity=".9"/>' +
+          '<path d="M0 -4.6c1.4 1 2 2.4 2 3.6h-4c0-1.2.6-2.6 2-3.6z" fill="' + light + '" opacity=".7"/></g>';
+      case 'Honor':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="6.6" ' +
+          'font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="0.4" fill="' + dark + '">HONOR</text>';
+      case 'Xiaomi':
+      case 'POCO':
+        return '<rect x="' + (cx - 6) + '" y="' + (y - 5) + '" width="12" height="10" rx="2.6" fill="rgba(255,140,0,.85)"/>' +
+          '<text x="' + cx + '" y="' + (y + 2) + '" text-anchor="middle" font-size="6" font-weight="800" ' +
+          'font-family="Arial, Helvetica, sans-serif" fill="#fff">' + (brand === 'POCO' ? 'P' : 'mi') + '</text>';
+      case 'OPPO':
+        return '<ellipse cx="' + cx + '" cy="' + y + '" rx="6.4" ry="3.2" fill="none" stroke="' + dark + '" stroke-width="1.4"/>';
+      case 'vivo':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="6.4" font-style="italic" ' +
+          'font-family="Georgia, serif" fill="' + dark + '">vivo</text>';
+      case 'realme':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="6" ' +
+          'font-family="Arial, Helvetica, sans-serif" font-weight="800" fill="' + dark + '">realme</text>';
+      case 'Sony':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="6" ' +
+          'font-family="Arial, sans-serif" font-weight="700" letter-spacing="0.8" fill="' + dark + '">SONY</text>';
+      case 'Motorola':
+        return '<circle cx="' + cx + '" cy="' + y + '" r="4.6" fill="none" stroke="' + dark + '" stroke-width="1.3"/>' +
+          '<path d="M' + (cx - 2) + ' ' + y + 'h4" stroke="' + dark + '" stroke-width="1.3"/>';
+      case 'ASUS':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="5.6" ' +
+          'font-family="Arial, sans-serif" font-weight="800" letter-spacing="0.6" fill="' + dark + '">ROG</text>';
+      case 'Tecno':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="5.6" ' +
+          'font-family="Arial, sans-serif" fill="' + dark + '">TECNO</text>';
+      case 'Infinix':
+        return '<text x="' + cx + '" y="' + y + '" text-anchor="middle" font-size="5.6" ' +
+          'font-family="Arial, sans-serif" fill="' + dark + '">Infinix</text>';
+      default:
+        return '';
+    }
+  }
+
+  // ---------- блок камеры ----------
+  function lens(x, y, r) {
+    return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#0a0d12" stroke="rgba(180,200,230,.35)" stroke-width=".6"/>' +
+      '<circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.42) + '" fill="#1b3f66"/>' +
+      '<circle cx="' + (x - r * 0.25) + '" cy="' + (y - r * 0.25) + '" r="' + (r * 0.16) + '" fill="rgba(255,255,255,.6)"/>';
+  }
+
+  function cameraModule(cam, bx, bw, by, hue) {
+    const cx = bx + bw / 2;
+    const top = by + 6;
+    const mod = 'hsl(' + hue + ' 12% 17%)';
+    const edge = 'rgba(255,255,255,.16)';
+    const L1 = bx + 9, L2 = bx + 9, L3 = bx + 9;
+    switch (cam) {
+      // iPhone Pro: квадрат с тремя линзами треугольником
+      case 'triple':
+        return '<rect x="' + (bx + 5) + '" y="' + top + '" width="25" height="25" rx="8" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 12, top + 7, 3.6) + lens(bx + 23, top + 7, 3.6) + lens(bx + 12, top + 18, 3.6) +
+          '<circle cx="' + (bx + 23) + '" cy="' + (top + 18) + '" r="1.7" fill="#f4e8c8" opacity=".8"/>';
+      // iPhone обычный / mini: квадрат, две линзы по диагонали
+      case 'dual_d':
+        return '<rect x="' + (bx + 5) + '" y="' + top + '" width="24" height="24" rx="7.5" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 12, top + 7.5, 3.6) + lens(bx + 22, top + 16.5, 3.6) +
+          '<circle cx="' + (bx + 22) + '" cy="' + (top + 7) + '" r="1.6" fill="#f4e8c8" opacity=".75"/>';
+      // iPhone X/11: вертикальная колба
+      case 'dual_v':
+        return '<rect x="' + (bx + 5) + '" y="' + top + '" width="15" height="26" rx="6" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 12.5, top + 8, 3.4) + lens(bx + 12.5, top + 18, 3.4) +
+          '<circle cx="' + (bx + 17) + '" cy="' + (top + 13) + '" r="1.4" fill="#f4e8c8" opacity=".75"/>';
+      // iPhone 8 / SE: одиночная линза с вспышкой
+      case 'single':
+        return '<rect x="' + (bx + 5) + '" y="' + top + '" width="15" height="15" rx="5" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 12.5, top + 7.5, 4) +
+          '<circle cx="' + (bx + 21) + '" cy="' + (top + 4.5) + '" r="1.8" fill="#f4e8c8" opacity=".85"/>';
+      // Samsung S/A: вертикальный пенал
+      case 'pill3':
+        return '<rect x="' + (bx + 4) + '" y="' + top + '" width="12" height="31" rx="6" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 10, top + 7, 3.1) + lens(bx + 10, top + 15.5, 3.1) + lens(bx + 10, top + 24, 3.1);
+      // Pixel: планка во всю ширину
+      case 'bar2': {
+        const w = bw - 14;
+        const x = bx + 7;
+        return '<rect x="' + x + '" y="' + top + '" width="' + w + '" height="13" rx="6.5" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(x + 8, top + 6.5, 3.4) + lens(x + w - 8, top + 6.5, 3.4) +
+          '<circle cx="' + (x + w / 2) + '" cy="' + (top + 6.5) + '" r="1.5" fill="#f4e8c8" opacity=".7"/>';
+      }
+      // Xiaomi / Redmi: прямоугольник с 2-3 линзами
+      case 'rect3':
+        return '<rect x="' + (bx + 5) + '" y="' + top + '" width="24" height="20" rx="6" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 11, top + 6, 3.2) + lens(bx + 21, top + 6, 3.2) + lens(bx + 11, top + 15, 3.2) +
+          '<circle cx="' + (bx + 21) + '" cy="' + (top + 15) + '" r="1.4" fill="#f4e8c8" opacity=".7"/>';
+      case 'rect2':
+        return '<rect x="' + (bx + 5) + '" y="' + top + '" width="22" height="15" rx="5" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 11, top + 7.5, 3) + lens(bx + 21, top + 7.5, 3) +
+          '<circle cx="' + (bx + 16) + '" cy="' + (top + 3.2) + '" r="1.2" fill="#f4e8c8" opacity=".6"/>';
+      // OnePlus / Honor / Xiaomi Ultra: большой круг
+      case 'circle3':
+        return '<circle cx="' + (bx + 16) + '" cy="' + (top + 13) + '" r="13" fill="' + mod + '" stroke="' + edge + '" stroke-width=".7"/>' +
+          lens(bx + 16, top + 6, 3.4) + lens(bx + 9, top + 17, 3.4) + lens(bx + 23, top + 17, 3.4);
+      // Sony: вертикальная полоса в углу
+      case 'vertical':
+        return '<rect x="' + (bx + 6) + '" y="' + top + '" width="9" height="34" rx="4.5" fill="' + mod + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          lens(bx + 10.5, top + 7, 2.8) + lens(bx + 10.5, top + 17, 2.8) + lens(bx + 10.5, top + 27, 2.8);
+      default:
+        return lens(bx + 12, top + 8, 4);
+    }
+  }
+
+  // ---------- вырез экрана ----------
+  function notch(kind, bx, bw, by, ih) {
+    const cx = bx + bw / 2;
+    const top = by + 4;
+    switch (kind) {
+      case 'notch':
+        return '<rect x="' + (cx - 14) + '" y="' + top + '" width="28" height="6.5" rx="3.2" fill="#05070a"/>';
+      case 'island':
+        return '<rect x="' + (cx - 9) + '" y="' + (top + 4) + '" width="18" height="6" rx="3" fill="#05070a"/>';
+      case 'hole':
+        return '<circle cx="' + cx + '" cy="' + (top + 7) + '" r="2.9" fill="#05070a"/>';
+      case 'drop':
+        return '<circle cx="' + cx + '" cy="' + (top + 7) + '" r="3.4" fill="#05070a"/>';
+      case 'chin':
+        return '<circle cx="' + cx + '" cy="' + (by + ih - 6) + '" r="5" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.2"/>';
+      case 'bezels':
+        return '';
+      default:
+        return '';
+    }
+  }
+
+  // ---------- трещины: генерируем узор ----------
+  function crack(x, y, w, h, seed, count) {
+    let s = seed;
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    let d = '';
+    const n = count || 7;
+    for (let i = 0; i < n; i++) {
+      const cx = x + rnd() * w;
+      const cy = y + rnd() * h;
+      const len = 8 + rnd() * w * 0.8;
+      const ang = rnd() * Math.PI * 2;
+      const steps = 4 + Math.floor(rnd() * 4);
+      d += 'M' + cx.toFixed(1) + ' ' + cy.toFixed(1);
+      for (let k = 1; k <= steps; k++) {
+        const a = ang + (rnd() - 0.5) * 1.1;
+        const r = len / steps * k;
+        d += ' L' + (cx + Math.cos(a) * r).toFixed(1) + ' ' + (cy + Math.sin(a) * r).toFixed(1);
+      }
+    }
+    return d;
+  }
+
+  function cracksOn(x, y, w, h, seed, strong) {
+    const d = crack(x, y, w, h, seed, strong ? 11 : 7);
+    return '<path d="' + d + '" fill="none" stroke="rgba(255,255,255,' + (strong ? 0.85 : 0.6) + ')" stroke-width="' + (strong ? 1.1 : 0.8) + '"/>' +
+      '<path d="' + d + '" fill="none" stroke="rgba(160,220,255,.35)" stroke-width="' + (strong ? 2.2 : 1.6) + '" opacity=".5"/>';
+  }
+
+  function scratch(x, y, w, h, seed) {
+    let s = seed;
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    let out = '';
+    for (let i = 0; i < 6; i++) {
+      const x1 = x + rnd() * w, y1 = y + rnd() * h;
+      const x2 = x1 + (rnd() - 0.5) * w * 0.6, y2 = y1 + (rnd() - 0.5) * h * 0.6;
+      out += '<path d="M' + x1.toFixed(1) + ' ' + y1.toFixed(1) + 'L' + x2.toFixed(1) + ' ' + y2.toFixed(1) + '" stroke="rgba(255,255,255,.45)" stroke-width=".7"/>';
+    }
+    return out;
+  }
+
+  function pixels(x, y, w, h, seed) {
+    let s = seed;
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    let out = '';
+    for (let i = 0; i < 26; i++) {
+      out += '<rect x="' + (x + rnd() * w) + '" y="' + (y + rnd() * h) + '" width="1.6" height="1.6" fill="rgba(120,200,255,.7)"/>';
+    }
+    return out;
+  }
+
+  function waterStains(x, y, w, h, seed) {
+    let s = seed;
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    let out = '';
+    for (let i = 0; i < 5; i++) {
+      out += '<ellipse cx="' + (x + rnd() * w) + '" cy="' + (y + rnd() * h) + '" rx="' + (4 + rnd() * 9) + '" ry="' + (3 + rnd() * 7) + '" fill="rgba(190,150,60,.22)"/>';
+    }
+    return out;
+  }
+
+  // ---------- размеры по реальным пропорциям ----------
+  function sizeFor(model) {
+    const name = model.name;
+    if (model.fold) return { w: 74, h: 150 };
+    if (/iPhone SE|iPhone 8/.test(name)) return { w: 66, h: 131 };
+    if (/Pro Max|Ultra|\+/.test(name)) return { w: 71, h: 148 };
+    if (/Flip/.test(name)) return { w: 68, h: 148 };
+    if (/e$|12 mini|13 mini/.test(name)) return { w: 65, h: 140 };
+    return { w: 68, h: 145 };
+  }
+
+  let _uid = 0;
+
+  // side: 'back' | 'front'
+  function draw(model, phoneColor, opts) {
+    opts = opts || {};
+    const side = opts.side || 'back';
+    const defects = opts.defects || [];
+    const uid = 'p' + (++_uid);
+    const sz = sizeFor(model);
+    const bw = sz.w, bh = sz.h;
+    const bx = (100 - bw) / 2, by = (150 - bh) / 2;
+    const r = sz.w > 0 ? 11 : 11;
+    const [hue, sat, light] = color(phoneColor);
+    const glassBack = !/A\d\d|Redmi|POCO|Moto|Camon|Note 50|Edge|Poco/.test(model.name);
+    const hasScreen = side === 'front';
+
+    const c1 = hsl(hue, Math.max(6, sat - 12), light + 22);
+    const c2 = hsl(hue, sat, light);
+    const c3 = hsl(hue, sat, Math.max(10, light - 14));
+
+    let svg = '<svg class="psvg" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+    svg += '<defs>' +
+      '<linearGradient id="' + uid + 'b" x1="0" y1="0" x2=".9" y2="1">' +
+      '<stop offset="0" stop-color="' + c1 + '"/><stop offset=".42" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/></linearGradient>' +
+      '<linearGradient id="' + uid + 's" x1="0" y1="0" x2=".3" y2="1">' +
+      '<stop offset="0" stop-color="#1a2330"/><stop offset=".5" stop-color="#070a0e"/><stop offset="1" stop-color="#121a24"/></linearGradient>' +
+      '</defs>';
+
+    // корпус
+    svg += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="' + r + '" fill="url(#' + uid + 'b)" stroke="rgba(0,0,0,.45)" stroke-width=".7"/>';
+
+    if (hasScreen) {
+      // экран
+      const ix = bx + 2.5, iy = by + 2.5, iw = bw - 5, ih = bh - 5;
+      svg += '<rect x="' + ix + '" y="' + iy + '" width="' + iw + '" height="' + ih + '" rx="' + (r - 2) + '" fill="url(#' + uid + 's)"/>';
+      // обои
+      svg += '<ellipse cx="' + (ix + iw / 2) + '" cy="' + (iy + ih * 0.62) + '" rx="' + (iw * 0.55) + '" ry="' + (ih * 0.42) + '" fill="rgba(70,120,220,.28)"/>';
+      svg += '<ellipse cx="' + (ix + iw * 0.32) + '" cy="' + (iy + ih * 0.3) + '" rx="' + (iw * 0.3) + '" ry="' + (ih * 0.2) + '" fill="rgba(210,90,160,.25)"/>';
+      // блик
+      svg += '<path d="M' + (ix + 1) + ' ' + (iy + 6) + ' L' + (ix + iw - 3) + ' ' + (iy + 3) + ' L' + (ix + iw - 3) + ' ' + (iy + ih * 0.5) + ' Z" fill="rgba(255,255,255,.05)"/>';
+      svg += notch(model.notch, bx, bw, by, ih);
+
+      // дефекты экрана
+      const hasDead = defects.indexOf('screen_dead') >= 0;
+      const hasCrack = defects.indexOf('screen_crack') >= 0 || hasDead;
+      if (hasCrack) svg += '<g>' + cracksOn(ix, iy, iw, ih, 1234 + (opts.seed || 0), hasDead) + pixels(ix, iy, iw, ih, 77) + '</g>';
+    } else {
+      // спинка: текстура и рамка
+      svg += '<rect x="' + (bx + 1.6) + '" y="' + (by + 1.6) + '" width="' + (bw - 3.2) + '" height="' + (bh - 3.2) + '" rx="' + (r - 1) + '" fill="none" stroke="rgba(255,255,255,.22)" stroke-width=".8"/>';
+      svg += '<path d="M' + (bx + 2) + ' ' + (by + bh * 0.5) + ' Q' + (bx + bw / 2) + ' ' + (by + bh * 0.42) + ' ' + (bx + bw - 2) + ' ' + (by + bh * 0.5) + '" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.2"/>';
+
+      svg += cameraModule(model.cam, bx, bw, by, hue);
+
+      // лого по центру спинки
+      svg += logo(model.brand, bw, bx, by + bh * 0.56);
+
+      // линия сгиба для складных
+      if (model.fold) {
+        const fx = bx + bw / 2;
+        svg += '<line x1="' + fx + '" y1="' + (by + 2) + '" x2="' + fx + '" y2="' + (by + bh - 2) + '" stroke="rgba(0,0,0,.4)" stroke-width="1.3"/>';
+        svg += '<line x1="' + (fx + 1.6) + '" y1="' + (by + 2) + '" x2="' + (fx + 1.6) + '" y2="' + (by + bh - 2) + '" stroke="rgba(255,255,255,.16)" stroke-width="1"/>';
+      }
+
+      // дефекты спинки: трещины только на стекле
+      if (glassBack && defects.indexOf('back') >= 0) {
+        svg += cracksOn(bx + 4, by + 4, bw - 8, bh - 8, 555 + (opts.seed || 0), false);
+      }
+      if (glassBack && defects.indexOf('screen_dead') >= 0) {
+        svg += cracksOn(bx + 6, by + bh * 0.6, bw - 12, bh * 0.3, 991, false);
+      }
+      if (defects.indexOf('frame') >= 0 || (!glassBack && defects.indexOf('back') >= 0)) {
+        svg += scratch(bx + 5, by + 5, bw - 10, bh - 10, 321 + (opts.seed || 0));
+      }
+      if (defects.indexOf('water') >= 0) svg += waterStains(bx + 6, by + bh * 0.55, bw - 12, bh * 0.35, 424);
+      if (defects.indexOf('camera') >= 0) {
+        svg += '<rect x="' + (bx + 5) + '" y="' + (by + 6) + '" width="15" height="15" rx="4" fill="rgba(90,60,40,.35)"/>';
+      }
+    }
+
+    svg += '</svg>';
+    return svg;
+  }
+
+  root.PHONE = { draw: draw, COLORS: COLORS };
+})(window);
+
+
 /* ===== ai.js ===== */
 /* ============================================================
    AVITO FLIP — диалоги.
@@ -2610,7 +2945,7 @@ html, body { background: var(--bg); }
 
   const AI = {
     key: '',
-    model: 'deepseek-flash',
+    model: 'deepseek-chat',
     lastError: '',
     stats: { calls: 0, ok: 0, fail: 0 }
   };
@@ -2904,32 +3239,7 @@ html, body { background: var(--bg); }
   }
 
   /* ---------- публичный вызов ---------- */
-  async function serverChat(messages) {
-    if (!root.SRV || !root.SRV.cfg || !root.SRV.cfg.backend) return { ok: false, error: 'no_backend' };
-    const r = await root.SRV.call('/ai', { messages: messages.slice(-14) }, 22000);
-    if (!r.ok) return { ok: false, error: r.error, limit: r.error === 'limit' };
-    AI.stats.ok++;
-    return { ok: true, content: String(r.data.content || '').trim() };
-  }
-
-  AI.backend = function () { return !!(root.SRV && root.SRV.cfg && root.SRV.cfg.backend); };
-
-  // если сервер включён — говорим через него (ключ живёт на сервере)
-  async function viaServer(ctx, who) {
-    if (!AI.backend()) return null;
-    const sys = who === 'seller' ? sellerSystem(ctx) + '\n' + sellerAction(ctx.intent, ctx)
-                                 : buyerSystem(ctx) + '\n' + buyerAction(ctx.intent, ctx);
-    const messages = [{ role: 'system', content: sys }].concat(historyToMessages(ctx.chat, 8));
-    messages.push({ role: 'system', content: 'Ответь одной короткой репликой.' });
-    const r = await serverChat(messages);
-    if (!r.ok) return { text: null, limit: r.limit, error: r.error };
-    return { text: clean(r.content) };
-  }
-
   AI.sellerReply = async function (ctx) {
-    const s = await viaServer(ctx, 'seller');
-    if (s && s.text) return { text: s.text, via: 'llm' };
-    if (s && s.limit) return { text: AI.sellerLocal(ctx.intent, ctx), via: 'local', limit: true };
     if (!AI.available()) return { text: AI.sellerLocal(ctx.intent, ctx), via: 'local' };
     const messages = [{ role: 'system', content: sellerSystem(ctx) + '\n' + sellerAction(ctx.intent, ctx) }]
       .concat(historyToMessages(ctx.chat, 8));
@@ -2940,9 +3250,6 @@ html, body { background: var(--bg); }
   };
 
   AI.buyerReply = async function (ctx) {
-    const s = await viaServer(ctx, 'buyer');
-    if (s && s.text) return { text: s.text, via: 'llm' };
-    if (s && s.limit) return { text: AI.buyerLocal(ctx.intent, ctx), via: 'local', limit: true };
     if (!AI.available()) return { text: AI.buyerLocal(ctx.intent, ctx), via: 'local' };
     const messages = [{ role: 'system', content: buyerSystem(ctx) + '\n' + buyerAction(ctx.intent, ctx) }]
       .concat(historyToMessages(ctx.chat, 8));
@@ -2958,6 +3265,10 @@ html, body { background: var(--bg); }
       return 'Здравствуйте, да, актуально. Смотрите, всё как в описании.';
     }
     const b = ctx.buyer;
+    if (b.agreesAsIs && Math.random() < 0.7) {
+      return D.pick(D.OPENERS) + ' Беру по вашей цене, если всё так, как на фото.';
+    }
+    if (Math.random() < 0.35) return D.pick(D.OPENERS);
     const set = BUY_TPL[b.kind] || BUY_TPL.normal;
     return tpl(set, 'open', { budget: fmt(b.budget), price: fmt(b.offer) });
   };
@@ -2974,123 +3285,6 @@ html, body { background: var(--bg); }
   if (typeof module !== 'undefined' && module.exports) module.exports = AI;
 })(typeof window !== 'undefined' ? window : globalThis);
 
-
-
-/* ===== server.js (Mide) ===== */
-(function (root) {
-  'use strict';
-  const CFG = { backend: '', paid: false };
-  let uid = '';
-
-  function init() {
-    try {
-      const tg = root.Telegram && root.Telegram.WebApp;
-      if (tg) {
-        try { tg.ready(); tg.expand(); } catch (e) {}
-        uid = (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) ? 'tg:' + tg.initDataUnsafe.user.id : '';
-        CFG.paid = !!tg.initDataUnsafe && !!tg.initDataUnsafe.user;
-      }
-    } catch (e) {}
-    if (!uid) {
-      const q = new URLSearchParams(location.search);
-      uid = q.get('uid') || '';
-    }
-    if (!uid) {
-      let local = '';
-      try { local = localStorage.getItem('mide.uid') || ''; } catch (e) {}
-      if (!local) { local = 'web-' + Math.random().toString(36).slice(2, 10); try { localStorage.setItem('mide.uid', local); } catch (e) {} }
-      uid = local;
-    }
-    // сервер: если игра открыта в Telegram — берём адрес из настроек игры
-    CFG.backend = (root.MIDE_BACKEND || '').replace(/\/$/, '');
-  }
-
-  async function call(path, payload, timeout) {
-    if (!CFG.backend) return { ok: false, error: 'no_backend' };
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), timeout || 20000);
-    try {
-      const r = await fetch(CFG.backend + path, {
-        method: payload ? 'POST' : 'GET',
-        headers: { 'Content-Type': 'application/json', 'X-Mide-Uid': uid },
-        body: payload ? JSON.stringify(Object.assign({ uid: uid }, payload)) : undefined,
-        signal: ctrl.signal
-      });
-      clearTimeout(t);
-      const j = await r.json().catch(function () { return {}; });
-      if (!r.ok) return { ok: false, status: r.status, error: j.error || ('http_' + r.status), data: j };
-      return { ok: true, data: j };
-    } catch (e) {
-      clearTimeout(t);
-      return { ok: false, error: e && e.name === 'AbortError' ? 'timeout' : String(e && e.message || e) };
-    }
-  }
-
-  root.SRV = { init: init, call: call, uid: function () { return uid; }, cfg: CFG };
-  if (typeof module !== 'undefined' && module.exports) module.exports = root.SRV;
-})(typeof window !== 'undefined' ? window : globalThis);
-
-
-/* ===== early access gate ===== */
-(function (root) {
-  'use strict';
-  const PRICE = 1;
-  const el = () => document.getElementById('early');
-
-  function show(note) {
-    const box = el();
-    if (!box) return;
-    const btn = document.getElementById('early-pay');
-    const n = document.getElementById('early-note');
-    if (btn) btn.textContent = 'Открыть чат с ботом — ' + PRICE + ' ★';
-    if (n) n.textContent = note || 'Оплата звёздами Telegram. После покупки вернись в игру — доступ включится сам.';
-    box.hidden = false;
-    // доступно только в Telegram
-    const tg = root.Telegram && root.Telegram.WebApp;
-    if (!tg || !tg.initData) {
-      if (btn) btn.disabled = false;
-      if (n) n.textContent = 'Открой игру через бота @' + (root.MIDE_BOT || 'MideSimBot') + ' в Telegram — там доступ оформляется в один тап.';
-    }
-  }
-
-  function hide() {
-    const box = el();
-    if (box) box.hidden = true;
-  }
-
-  async function pay() {
-    const tg = root.Telegram && root.Telegram.WebApp;
-    if (!tg || !tg.initData) { show('Оплата доступна только внутри Telegram.'); return; }
-    const b = document.getElementById('early-pay');
-    if (b) { b.disabled = true; b.textContent = 'Открываем...'; }
-    if (root.SRV && root.SRV.cfg.backend) await root.SRV.call('/invoice', {});
-    try { tg.close(); } catch (e) {}
-  }
-
-  async function gate() {
-    if (!root.SRV || !root.SRV.cfg.backend) return true;
-    const r = await root.SRV.call('/limits', null, 8000);
-    if (!r.ok) { show('Сервер недоступен — проверь подключение.'); return false; }
-    if (!r.data.paid) {
-      show(r.data.paid === false ? 'Игра в раннем доступе. Доступ — ' + PRICE + ' звезда.' : '');
-      return false;
-    }
-    hide();
-    return true;
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    if (root.SRV) root.SRV.init();
-    const btn = document.getElementById('early-pay');
-    if (btn) btn.onclick = pay;
-    if (!root.SRV || !root.SRV.cfg.backend) return;
-    show('Проверяем доступ...');
-    gate();
-  });
-
-  root.GATE = { gate: gate, show: show, hide: hide, price: PRICE };
-  if (typeof module !== 'undefined' && module.exports) module.exports = root.GATE;
-})(typeof window !== 'undefined' ? window : globalThis);
 
 /* ===== ui.js ===== */
 /* ============================================================
@@ -3142,100 +3336,16 @@ html, body { background: var(--bg); }
     return String(n);
   }
 
-  let _svgUid = 0;
-
-  // рисуем конкретный аппарат: свой блок камер, свой вырез, складные шире
-  function phoneSVG(model, color) {
-    const hue = COLOR_HUE[color] != null ? COLOR_HUE[color] : 215;
-    const sat = COLOR_SAT[color] != null ? COLOR_SAT[color] : 45;
-    const uid = 'pg' + (++_svgUid);
-    const fold = !!model.fold;
-    const cam = model.cam || 'rect2';
-    const notch = model.notch || 'hole';
-
-    const bx = fold ? 3 : 11, bw = fold ? 94 : 78;
-    const by = 4, bh = 142, rx = 15;
-
-    const c1 = 'hsl(' + hue + ' ' + sat + '% 77%)';
-    const c2 = 'hsl(' + hue + ' ' + sat + '% 48%)';
-    const c3 = 'hsl(' + hue + ' ' + sat + '% 33%)';
-    const lensF = '#07090c';
-    const modF = 'hsl(' + hue + ' ' + Math.min(sat + 4, 60) + '% 21%)';
-    const modS = 'rgba(255,255,255,.17)';
-
-    // блок камер
-    const cx = bx + 6, cy = by + 7;
-    let camSvg = '';
-    const lens = (x, y, r) => '<circle cx="' + x + '" cy="' + y + '" r="' + (r || 3.4) + '" fill="' + lensF + '" stroke="rgba(150,195,255,.4)" stroke-width=".7"/>' +
-      '<circle cx="' + x + '" cy="' + y + '" r="' + (r ? r * 0.45 : 1.5) + '" fill="#24507d"/>';
-
-    if (cam === 'single') {
-      camSvg = lens(cx + 6, cy + 7, 4.4) + '<circle cx="' + (cx + 16) + '" cy="' + (cy + 4) + '" r="2" fill="#f2e7c9" opacity=".75"/>';
-    } else if (cam === 'dual_v') {
-      camSvg = '<rect x="' + cx + '" y="' + cy + '" width="15" height="24" rx="5" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 7.5, cy + 7) + lens(cx + 7.5, cy + 17) +
-        '<circle cx="' + (cx + 12.5) + '" cy="' + (cy + 12) + '" r="1.4" fill="#f2e7c9" opacity=".7"/>';
-    } else if (cam === 'dual_d') {
-      camSvg = '<rect x="' + cx + '" y="' + cy + '" width="23" height="23" rx="6.5" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 7, cy + 7) + lens(cx + 16, cy + 16) +
-        '<circle cx="' + (cx + 17) + '" cy="' + (cy + 6.5) + '" r="1.5" fill="#f2e7c9" opacity=".7"/>';
-    } else if (cam === 'triple') {
-      camSvg = '<rect x="' + cx + '" y="' + cy + '" width="24" height="24" rx="7" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 7, cy + 7) + lens(cx + 17, cy + 7) + lens(cx + 7, cy + 17) +
-        '<circle cx="' + (cx + 17.5) + '" cy="' + (cy + 17.5) + '" r="1.6" fill="#f2e7c9" opacity=".75"/>';
-    } else if (cam === 'pill3') {
-      camSvg = '<rect x="' + cx + '" y="' + cy + '" width="11.5" height="29" rx="5.75" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 5.7, cy + 6, 3) + lens(cx + 5.7, cy + 14.5, 3) + lens(cx + 5.7, cy + 23, 3);
-    } else if (cam === 'bar2') {
-      camSvg = '<rect x="' + (bx + (bw - 36) / 2) + '" y="' + cy + '" width="36" height="12" rx="6" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(bx + (bw - 36) / 2 + 8, cy + 6, 3.4) + lens(bx + (bw - 36) / 2 + 27, cy + 6, 3.4) +
-        '<circle cx="' + (bx + (bw - 36) / 2 + 17.5) + '" cy="' + (cy + 6) + '" r="1.3" fill="#f2e7c9" opacity=".65"/>';
-    } else if (cam === 'rect3') {
-      camSvg = '<rect x="' + cx + '" y="' + cy + '" width="25" height="21" rx="6" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 7, cy + 6.5, 3.2) + lens(cx + 17.5, cy + 6.5, 3.2) + lens(cx + 7, cy + 15.5, 3.2) +
-        '<circle cx="' + (cx + 17.5) + '" cy="' + (cy + 15.5) + '" r="1.4" fill="#f2e7c9" opacity=".7"/>';
-    } else if (cam === 'circle3') {
-      camSvg = '<circle cx="' + (cx + 11) + '" cy="' + (cy + 11) + '" r="12.5" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 11, cy + 5, 3.2) + lens(cx + 5, cy + 15, 3.2) + lens(cx + 17, cy + 15, 3.2);
-    } else {
-      camSvg = '<rect x="' + cx + '" y="' + cy + '" width="24" height="15" rx="5" fill="' + modF + '" stroke="' + modS + '" stroke-width=".6"/>' +
-        lens(cx + 6.5, cy + 7.5, 3) + lens(cx + 17.5, cy + 7.5, 3) +
-        '<circle cx="' + (cx + 12) + '" cy="' + (cy + 3.5) + '" r="1.2" fill="#f2e7c9" opacity=".6"/>';
-    }
-
-    const logo = model.brand === 'Apple'
-      ? '<circle cx="50" cy="' + (by + bh * 0.55) + '" r="7.5" fill="rgba(255,255,255,.16)" stroke="rgba(255,255,255,.3)" stroke-width=".9"/>'
-      : '<rect x="42" y="' + (by + bh - 16) + '" width="16" height="2.4" rx="1.2" fill="rgba(255,255,255,.18)"/>';
-
-    return '<svg class="psvg" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-      '<defs>' +
-      '<linearGradient id="' + uid + 'b" x1="0" y1="0" x2=".85" y2="1">' +
-      '<stop offset="0" stop-color="' + c1 + '"/><stop offset=".48" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/>' +
-      '</linearGradient>' +
-      '<linearGradient id="' + uid + 'h" x1="0" y1="0" x2=".2" y2="1">' +
-      '<stop offset="0" stop-color="#ffffff" stop-opacity=".28"/><stop offset=".5" stop-color="#ffffff" stop-opacity="0"/>' +
-      '</linearGradient>' +
-      '<clipPath id="' + uid + 'c"><rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="' + rx + '"/></clipPath>' +
-      '</defs>' +
-      '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="' + rx + '" fill="url(#' + uid + 'b)" stroke="rgba(0,0,0,.28)" stroke-width=".9"/>' +
-      '<g clip-path="url(#' + uid + 'c)">' +
-      '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + (bh * 0.62) + '" fill="url(#' + uid + 'h)"/>' +
-      '</g>' +
-      '<rect x="' + (bx + 1.4) + '" y="' + (by + 1.4) + '" width="' + (bw - 2.8) + '" height="' + (bh - 2.8) + '" rx="' + (rx - 1.2) + '" fill="none" stroke="rgba(255,255,255,.26)" stroke-width=".9"/>' +
-      camSvg +
-      logo +
-      (fold
-        ? '<line x1="49" y1="' + (by + 2) + '" x2="49" y2="' + (by + bh - 2) + '" stroke="rgba(0,0,0,.4)" stroke-width="1.4"/>' +
-          '<line x1="51" y1="' + (by + 2) + '" x2="51" y2="' + (by + bh - 2) + '" stroke="rgba(255,255,255,.2)" stroke-width="1.2"/>'
-        : '') +
-      '</svg>';
+    // отрисовка телефонов вынесена в phone.js
+  function phoneSVG(model, phoneColor, opts) {
+    return root.PHONE.draw(model, phoneColor, opts);
   }
 
-  function thumbHTML(model, color) {
-    return '<div class="svg-wrap">' + phoneSVG(model, color) + '</div>';
+  function thumbHTML(model, color, defects) {
+    return '<div class="svg-wrap">' + phoneSVG(model, color, { side: 'back', defects: defects }) + '</div>';
   }
 
-  const App = {
+const App = {
     state: null,
     view: 'feed',
     filter: 'all',
@@ -3548,14 +3658,6 @@ html, body { background: var(--bg); }
           '</div>';
       }
 
-      if (!this.state.stats.bought) {
-        html += '<div class="stock-item" style="border-color:#cfe9fb;background:linear-gradient(160deg,#f2faff,#fff)">' +
-          '<div style="font-size:12.5px;font-weight:800;margin-bottom:4px">Как это работает</div>' +
-          '<div style="font-size:11.5px;color:#5b6472;line-height:1.5">Найди телефон дешевле рынка → торгуйся в чате → приезжай на встречу и проверь его → почини → выставь заново и продай дороже.</div>' +
-          '<div class="btn-row mt8"><button class="btn sm primary" data-act="intro-ok">Понял, погнали</button></div>' +
-          '</div>';
-      }
-
       if (this.state.balance < 2000 && !this.state.phones.length) {
         html += '<div class="stock-item" style="border-color:#f0d9a8;background:#fffdf6">' +
           '<div style="font-size:12.5px;font-weight:800;margin-bottom:4px">Деньги кончились</div>' +
@@ -3613,8 +3715,9 @@ html, body { background: var(--bg); }
       const city = l.isMoscow ? l.city + ', ' + l.metro : l.city;
       const cls = idx >= 0 ? 'card anim' : 'card';
       const style = idx >= 0 ? ' style="--i:' + Math.min(idx, 12) + '"' : '';
-      return '<div class="' + cls + '"' + style + ' data-act="open-listing" data-id="' + l.id + '">' +
-        '<div class="thumb">' + thumbHTML(m, l.color) + '</div>' +
+      const visible = l.defects.filter(d => d.disclosed).map(d => d.key);
+    return '<div class="' + cls + '"' + style + ' data-act="open-listing" data-id="' + l.id + '">' +
+        '<div class="thumb">' + thumbHTML(m, l.color, visible) + '</div>' +
         '<div class="card-body">' +
         '<div class="card-price">' + money(l.ask) + '</div>' +
         '<div class="card-mkt">рынок ≈ ' + money(mkt) + '</div>' +
