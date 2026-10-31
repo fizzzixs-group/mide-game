@@ -2746,7 +2746,10 @@ window.DESK_PHOTO = ["UklGRlIGAABXRUJQVlA4IEYGAADwKwCdASosASwBPpVKn00lpCaloRLpeN
   function deskUrl(i) {
     const list = root.DESK_PHOTO || [];
     if (!list.length) return null;
-    return 'data:image/webp;base64,' + list[i % list.length];
+    const idx = Math.abs(i | 0) % list.length;
+    const data = list[idx];
+    if (!data) return null;
+    return 'data:image/webp;base64,' + data;
   }
 
   /** Собирает кадр: стол + телефон с тенью. Возвращает dataURL. */
@@ -2814,6 +2817,9 @@ window.DESK_PHOTO = ["UklGRlIGAABXRUJQVlA4IEYGAADwKwCdASosASwBPpVKn00lpCaloRLpeN
   function ph(modelId, deskIndex, size, cls) {
     size = size || 520;
     const key = modelId + ':' + deskIndex + ':' + size;
+    if (!root.MODEL_PHOTO || !root.MODEL_PHOTO[modelId]) {
+      return '<div class="pphoto-empty"></div>';
+    }
     const ready = cache[key] || frameURL(modelId, deskIndex, size);
     return '<img class="pphoto ' + (cls || '') + '" data-frame="' + key + '" src="' + ready + '" alt="">';
   }
