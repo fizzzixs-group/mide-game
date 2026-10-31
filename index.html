@@ -1350,6 +1350,97 @@ html, body { background: #f4f6f8 !important; }
 }
 .gallery-view .slide img { transform: none !important; object-fit: contain !important; }
 
+
+/* ============================================================
+   ПЛИТКА ФОТО: картинка как фон, ничего не вылезает и нет полос
+   ============================================================ */
+.card { padding: 0 !important; overflow: hidden !important; }
+.card .thumb {
+  width: 168px !important; min-width: 168px !important; max-width: 168px !important;
+  height: 168px !important; min-height: 168px !important; max-height: 168px !important;
+  padding: 0 !important;
+  position: relative !important;
+  display: block !important;
+  background-color: #fff !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  overflow: hidden !important;
+  border-radius: 0 !important;
+}
+/* саму картинку внутри плитки прячем — она уже как фон */
+.card .thumb .svg-wrap,
+.card .thumb img { display: none !important; }
+
+/* плитки на складе и в «моих объявлениях» — та же логика */
+.stock-top .thumb {
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: #fff !important;
+}
+.stock-top .thumb .svg-wrap, .stock-top .thumb img { display: none !important; }
+
+
+/* плитка фото должна быть видна и держать размер */
+.card > .thumb {
+  display: block !important;
+  flex: 0 0 168px !important;
+  width: 168px !important;
+  height: 168px !important;
+  background-size: contain !important;
+  background-position: center !important;
+}
+.card > .thumb[style*="background-image"] { display: block !important; }
+
+
+/* ВОЗВРАТ: обычная картинка внутри плитки, без фона */
+.card .thumb .svg-wrap,
+.card .thumb img { display: block !important; }
+.card .thumb .svg-wrap {
+  position: absolute !important; inset: 0 !important;
+  display: grid !important; place-items: center !important;
+  background: #fff !important;
+}
+.card .thumb img {
+  display: block !important;
+  width: 100% !important; height: 100% !important;
+  max-width: 100% !important; max-height: 100% !important;
+  object-fit: contain !important;
+  transform: none !important;
+  background: #fff !important;
+}
+
+
+/* фото не выходит за карточку: скругление и обрезка по краю плитки */
+.card { border-radius: 16px !important; overflow: hidden !important; }
+.card .thumb {
+  border-radius: 16px 0 0 16px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+.card .thumb .svg-wrap { border-radius: 16px 0 0 16px !important; overflow: hidden !important; }
+@media (max-width: 620px) {
+  .card .thumb { border-radius: 16px 16px 0 0 !important; }
+  .card .thumb .svg-wrap { border-radius: 16px 16px 0 0 !important; }
+}
+
+
+/* мобильная карточка: фото сверху по центру, без серых уголков */
+@media (max-width: 620px) {
+  .card { flex-direction: column !important; }
+  .card .thumb {
+    width: 100% !important; min-width: 0 !important; max-width: none !important;
+    height: 230px !important; min-height: 230px !important; max-height: 230px !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+  .card .thumb .svg-wrap {
+    border-radius: 16px 16px 0 0 !important;
+    background: #fff !important;
+  }
+  .card .thumb img { max-height: 230px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -3501,11 +3592,13 @@ window.DESK_PHOTO = [];
     return '';
   }
 
-  // только фотографии: телефон + случайный стол под каждое объявление
-  function thumbHTML(model, deskIndex) {
-    const n = (root.PHOTO && root.PHOTO.desks()) || 1;
-    const d = (deskIndex == null ? Math.floor(Math.random() * n) : deskIndex) % n;
-    return '<div class="svg-wrap photo">' + root.PHOTO.ph(model.id, d, 300) + '</div>';
+  // плитка фото: обычная картинка, вписана целиком
+  function thumbHTML(model) {
+    return '<div class="svg-wrap photo">' + root.PHOTO.ph(model.id) + '</div>';
+  }
+
+  function thumbStyle() {
+    return '';
   }
 
 const App = {
@@ -3886,7 +3979,7 @@ const App = {
       const style = idx >= 0 ? ' style="--i:' + Math.min(idx, 12) + '"' : '';
       const visible = l.defects.filter(d => d.disclosed).map(d => d.key);
     return '<div class="' + cls + '"' + style + ' data-act="open-listing" data-id="' + l.id + '">' +
-        '<div class="thumb">' + thumbHTML(m, l.desk) + '</div>' +
+        '<div class="thumb"' + thumbStyle(m) + '>' + thumbHTML(m) + '</div>' +
         '<div class="card-body">' +
         '<div class="card-price">' + money(l.ask) + '</div>' +
         '<div class="card-mkt">рынок ≈ ' + money(mkt) + '</div>' +
@@ -3912,7 +4005,7 @@ const App = {
         const known = p.defects.filter(d => d.found || d.disclosed);
         const unknownCount = p.defects.length - known.length;
         html += '<div class="stock-item" data-act="open-phone" data-id="' + p.id + '">' +
-          '<div class="stock-top"><div class="thumb">' + thumbHTML(m, p.color) + '</div>' +
+          '<div class="stock-top"><div class="thumb">' + thumbHTML(m) + '</div>' +
           '<div class="stock-info">' +
           '<div class="nm">' + esc(m.name) + ' ' + p.storage + ' ГБ</div>' +
           '<div class="sub">куплен за ' + money(p.boughtFor) + ' · день ' + p.boughtDay + '</div>' +
@@ -3945,7 +4038,7 @@ const App = {
         const unread = buyers.filter(b => !b.seen).length;
         const last = buyers[buyers.length - 1];
         html += '<div class="stock-item" data-act="open-sell" data-id="' + l.id + '">' +
-          '<div class="stock-top"><div class="thumb">' + thumbHTML(m, l.color) + '</div>' +
+          '<div class="stock-top"><div class="thumb">' + thumbHTML(m) + '</div>' +
           '<div class="stock-info">' +
           '<div class="nm">' + esc(m.name) + ' ' + l.storage + ' ГБ</div>' +
           '<div class="sub">' + money(l.ask) + ' · 👁 ' + l.views + ' · ' + buyers.length + ' пишут</div>' +
