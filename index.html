@@ -2907,6 +2907,24 @@ html, body { background: var(--bg); }
       svg.push('<path d="M' + (ix + 1) + ' ' + (iy + 8) + ' L' + (ix + iw - 2) + ' ' + (iy + 2) + ' L' + (ix + iw - 2) + ' ' + (iy + ih * .45) + ' Z" fill="rgba(255,255,255,.06)"/>');
       svg.push('</g>');
       svg.push(displayCut(m, bx, g.w, by, g.h));
+      // полоска статуса
+      svg.push('<g fill="rgba(255,255,255,.7)" font-family="Arial,sans-serif" font-size="3.4">' +
+        '<text x="' + (ix + 3) + '" y="' + (iy + 7.5) + '">9:41</text></g>');
+      svg.push('<g fill="rgba(255,255,255,.6)"><rect x="' + (ix + iw - 16) + '" y="' + (iy + 4) + '" width="6" height="3" rx="1"/>' +
+        '<rect x="' + (ix + iw - 8.5) + '" y="' + (iy + 3.5) + '" width="5" height="4" rx="1"/></g>');
+      // иконки на экране
+      svg.push('<g opacity=".8">');
+      const cols = 4, rows = 4, pad = 4;
+      const cw = (iw - pad * (cols + 1)) / cols;
+      for (let c = 0; c < cols; c++) {
+        for (let rr = 0; rr < rows; rr++) {
+          const ax = ix + pad + c * (cw + pad), ay = iy + ih * 0.24 + rr * (cw + pad);
+          svg.push('<rect x="' + ax.toFixed(1) + '" y="' + ay.toFixed(1) + '" width="' + cw.toFixed(1) + '" height="' + cw.toFixed(1) + '" rx="' + (cw * 0.24).toFixed(1) + '" fill="rgba(255,255,255,' + (0.10 + ((c + rr) % 3) * 0.06).toFixed(2) + ')"/>');
+        }
+      }
+      svg.push('</g>');
+      // док снизу
+      svg.push('<rect x="' + (ix + 3) + '" y="' + (iy + ih - 13) + '" width="' + (iw - 6) + '" height="10" rx="4" fill="rgba(255,255,255,.12)"/>');
       if (defects.indexOf('screen_dead') >= 0) {
         svg.push(crackGroup(ix, iy, iw, ih, seed, true), pixelDots(ix, iy, iw, ih, seed));
       } else if (defects.indexOf('screen_crack') >= 0) {
