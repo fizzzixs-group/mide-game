@@ -2770,9 +2770,9 @@ html, body { background: var(--bg); }
     pixel9:     { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
     pixel9pro:  { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
     pixel9pf:   { s: 'book', mat: 'matte', cam: 'pixel9Fold', cut: 'hole', fold: 'book' },
-    pixel10:    { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel10pro: { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
-    pixel10xl:  { s: 'wide', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
+    pixel10:    { s: 'slab', mat: 'glass', cam: 'pixel10Bar', cut: 'hole' },
+    pixel10pro: { s: 'slab', mat: 'glass', cam: 'pixel10Bar', cut: 'hole' },
+    pixel10xl:  { s: 'wide', mat: 'glass', cam: 'pixel10Bar', cut: 'hole' },
     pixel10pf:  { s: 'book', mat: 'matte', cam: 'pixel9Fold', cut: 'hole', fold: 'book' },
     pixel10a:   { s: 'slab', mat: 'glass', cam: 'pixelBar', cut: 'hole' },
     op9:        { s: 'slab', mat: 'glass', cam: 'xiaomi2', cut: 'hole' },
@@ -3006,9 +3006,22 @@ html, body { background: var(--bg); }
           '<circle cx="' + (x + 26.5) + '" cy="' + (y + 14) + '" r="1.1" fill="' + edge + '"/>';
       }
       case 'pixelBar': {
-        const w = W - 12, x = bx + 6, y = by + 5;
-        return box(x, y, w, 13, 6.5) + lensSvg(x + 8, y + 6.5, 3.4) + lensSvg(x + w - 8, y + 6.5, 3.4) +
-          flashSvg(x + w / 2, y + 6.5, 1.4);
+        // Pixel 6–9: капсула-визор во всю ширину корпуса
+        const w = W - 10, x = bx + 5, y = by + 5, h = 17;
+        return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (h / 2) + '" fill="' + body2 + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          // тёмная внутренняя капсула с линзами
+          '<rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="' + (w * 0.56) + '" height="' + (h - 4) + '" rx="' + ((h - 4) / 2) + '" fill="#0a0c10"/>' +
+          lensSvg(x + 8, y + h / 2, 3.6) + lensSvg(x + 17, y + h / 2, 3.1) +
+          '<circle cx="' + (x + 25) + '" cy="' + (y + h / 2) + '" r="1.1" fill="' + edge + '"/>' +
+          flashSvg(x + w - 7, y + h / 2, 3.2);
+      }
+      case 'pixel10Bar': {
+        // Pixel 10: визор с тремя линзами и отдельная вспышка справа
+        const w = W - 14, x = bx + 5, y = by + 5, h = 17;
+        return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (h / 2) + '" fill="' + body2 + '" stroke="' + edge + '" stroke-width=".6"/>' +
+          '<rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="' + (w - 4) + '" height="' + (h - 4) + '" rx="' + ((h - 4) / 2) + '" fill="#111318"/>' +
+          lensSvg(x + 8, y + h / 2, 3.5) + lensSvg(x + 17, y + h / 2, 3.5) + lensSvg(x + 25, y + h / 2, 3.0) +
+          flashSvg(x + w + 5, y + h / 2, 3.0);
       }
 
       // ---- Прочие бренды ----
