@@ -2050,21 +2050,64 @@ html, body { background: var(--bg) !important; }
      Новые и дорогие аппараты (Fold, Ultra, свежие iPhone) встречаются редко:
      на них легко попасться. Модель набирает вес по популярности и базовой цене,
      но её вес падает, если модель новая (год >= 2025) или складная. */
-  function pickModel() {
-    const now = 2026;
-    const weights = D.MODELS.map(m => {
-      let w = Math.max(0.2, m.pop || 1);
-      // новые и дорогие — редкость
-      const year = m.year || (m.tier >= 5 ? 2026 : m.tier >= 4 ? 2024 : 2021);
-      const fresh = Math.max(0, now - year);
-      w *= 0.55 + Math.min(1, fresh / 4) * 0.45;
-      if (m.fold) w *= 0.35;
-      if (m.base >= 80000) w *= 0.45;
-      else if (m.base >= 50000) w *= 0.7;
-      return w;
+  /* ---------- шанс появления модели ----------
+     На Авито не каждый день вываливают всё подряд. Есть «ходовые» модели,
+     которые висят постоянно, редкие, которые всплывают раз в несколько дней,
+     и совсем редкие — новые флагманы, складные, старые экзоты.
+
+     Для каждого дня используется своё зерно: расклад меняется от дня к дню,
+     но популярные модели остаются на виду. */
+  function daySeed(state) {
+    const d = (state && state.day) || 1;
+    let h = 2166136261 >>> 0;
+    const str = 'mide-day-' + d;
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h;
+  }
+
+  function seededRnd(seed) {
+    let s = seed >>> 0 || 1;
+    return function () {
+      s ^= s << 13; s >>>= 0;
+      s ^= s >> 17;
+      s ^= s << 5; s >>>= 0;
+      return s / 4294967296;
+    };
+  }
+
+  const dayWeightCache = {};
+
+  function dayWeights(day) {
+    if (dayWeightCache[day]) return dayWeightCache[day];
+    const rnd = seededRnd(daySeed({ day: day }));
+    const w = D.MODELS.map((m) => {
+      // ходовые модели: вес из популярности
+      let base = Math.max(0.2, m.pop || 1);
+      // дорогое и складное — редко
+      if (m.fold) base *= 0.30;
+      if (m.base >= 80000) base *= 0.40;
+      else if (m.base >= 50000) base *= 0.65;
+      // дневной «жребий»: у каждой модели свой шанс всплыть именно сегодня
+      // 0.15 — почти не появляется, 1.6 — сегодня как раз в топе
+      // шанс всплыть именно сегодня: от 5% до 95% моделей дня
+      const alive = rnd();
+      if (alive < 0.10) return 0;           // совсем не сегодня
+      const dayChance = 0.25 + rnd() * 1.5;  // если есть — с таким весом
+      return base * dayChance;
     });
+    dayWeightCache[day] = w;
+    return w;
+  }
+
+  function pickModel(state) {
+    const day = (state && state.day) || 1;
+    const weights = dayWeights(day);
+    const rnd = seededRnd(daySeed(state) ^ 0x9e3779b9 ^ Math.floor(Math.random() * 1e9));
     const total = weights.reduce((a, b) => a + b, 0);
-    let r = Math.random() * total;
+    let r = rnd() * total;
     for (let i = 0; i < D.MODELS.length; i++) {
       r -= weights[i];
       if (r <= 0) return D.MODELS[i];
@@ -2100,9 +2143,9 @@ html, body { background: var(--bg) !important; }
   }
 
   function generateListing(state, avoid) {
-    let model = pickModel();
+    let model = pickModel(state);
     if (avoid && avoid.size) {
-      for (let i = 0; i < 8 && avoid.has(model.id); i++) model = pickModel();
+      for (let i = 0; i < 8 && avoid.has(model.id); i++) model = pickModel(state);
     }
     const storage = pick(model.storages);
     const cosmetic = clamp(rndRange(0.35, 1), 0.2, 1);
@@ -2783,9 +2826,13 @@ html, body { background: var(--bg) !important; }
     }
     state.pendingReturns = still;
 
-    // истечение объявлений
-    state.listings = state.listings.filter(l => l.status === 'active' && l.expires >= state.day);
+    // новый день — новая лента: старые объявления уходят целиком
+    const old = state.listings || [];
+    state.listings = [];
     refreshFeed(state, 200);
+    // часть вчерашних (самых дешёвых) остаётся — на них ещё могут ответить
+    const keep = old.filter(l => l.status === 'active' && l.expires >= state.day && l.ask <= 12000).slice(0, 12);
+    state.listings = state.listings.concat(keep);
 
     // событие режима «Интересный»
     if (modeOf(state).eventChance && chance(modeOf(state).eventChance)) {
@@ -3068,18 +3115,40 @@ window.DESK_PHOTO = [];
     const timer = setTimeout(() => ctrl.abort(), opts.timeout || 12000);
     AI.stats.calls++;
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          key: AI.key,
-          model: AI.model,
-          messages: messages,
-          temperature: opts.temperature != null ? opts.temperature : 0.95,
-          max_tokens: opts.maxTokens || 140
-        }),
-        signal: ctrl.signal
-      });
+      // 1) свой прокси (локальный start.bat или Vercel) — если он есть
+      // 2) напрямую в DeepSeek из браузера — если прокси не отвечает
+      let res = null;
+      try {
+        res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            key: AI.key,
+            model: AI.model,
+            messages: messages,
+            temperature: opts.temperature != null ? opts.temperature : 0.95,
+            max_tokens: opts.maxTokens || 140
+          }),
+          signal: ctrl.signal
+        });
+        if (res.status === 404 || res.status === 405) res = null;
+      } catch (e) {
+        res = null;
+      }
+      if (!res) {
+        res = await fetch('https://api.deepseek.com/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + AI.key },
+          body: JSON.stringify({
+            model: AI.model,
+            messages: messages,
+            temperature: opts.temperature != null ? opts.temperature : 0.95,
+            max_tokens: opts.maxTokens || 140,
+            stream: false
+          }),
+          signal: ctrl.signal
+        });
+      }
       clearTimeout(timer);
       if (!res.ok) {
         const txt = await res.text();
@@ -3089,14 +3158,16 @@ window.DESK_PHOTO = [];
         return { ok: false, error: AI.lastError };
       }
       const data = await res.json();
-      if (!data || !data.content) {
+      const text = data && (data.content ||
+        (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content));
+      if (!text) {
         AI.stats.fail++;
         AI.lastError = 'пустой ответ';
         return { ok: false, error: AI.lastError };
       }
       AI.stats.ok++;
       AI.lastError = '';
-      return { ok: true, content: String(data.content).trim() };
+      return { ok: true, content: String(text).trim() };
     } catch (e) {
       clearTimeout(timer);
       AI.stats.fail++;
@@ -4005,7 +4076,7 @@ const App = {
       '<div class="key-status" id="key-status">' + (root.AI.available() ? 'ключ сохранён' : 'ключ не задан — диалоги на шаблонах') + '</div></div>' +
       '<div class="btn-row"><button class="btn sm primary" id="btn-key-save">Сохранить</button>' +
       '<button class="btn sm ghost" id="btn-key-test">Проверить</button></div>' +
-      '<div class="hint-line">Ключ хранится только в этом браузере и уходит на локальный прокси, который запускается файлом start.bat. В исходниках игры его нет.</div>' +
+      '<div class="hint-line">Ключ хранится только в этом браузере и уходит напрямую в DeepSeek из твоего браузера. Ключ хранится только у тебя на устройстве.</div>' +
       (location.protocol === 'file:'
         ? '<div class="warn-line">Игра открыта как файл — браузер заблокирует запросы к API. Запусти <b>start.bat</b>, чтобы включить живые диалоги.</div>'
         : '') +
