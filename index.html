@@ -1013,6 +1013,41 @@ html, body { background: var(--bg); }
   <div class="deal-flash" id="flash"></div>
 </div>
 
+<script>window.MIDE_BACKEND = '';</script>
+
+<div class="early" id="early" hidden>
+  <div class="early-box">
+    <div class="early-kick">РАННИЙ ДОСТУП</div>
+    <h1>Mide Simulator<br><span>в бете</span></h1>
+    <p class="early-lead">Игра в раннем доступе. Чтобы играть — оформи доступ за <b>1 звезду</b> (тестовый тариф).</p>
+    <ul class="early-list">
+      <li>Полный доступ к бете — все функции</li>
+      <li>Живые диалоги с настоящим ИИ, а не заготовками</li>
+      <li>Бонусы при релизе</li>
+    </ul>
+    <button class="early-btn" id="early-pay">Открыть чат с ботом — 1 ★</button>
+    <div class="early-note" id="early-note"></div>
+  </div>
+</div>
+
+<style>
+  .early { position: fixed; inset: 0; z-index: 999; display: flex; align-items: center; justify-content: center;
+    background: #0b0c0e; color: #fff; padding: 22px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  .early[hidden] { display: none; }
+  .early-box { max-width: 420px; width: 100%; }
+  .early-kick { font-size: 10.5px; letter-spacing: .28em; color: #8d939b; font-weight: 700; }
+  .early h1 { font-size: 34px; line-height: 1.05; letter-spacing: -.03em; margin: 10px 0 14px; font-weight: 800; }
+  .early h1 span { color: #8d939b; font-weight: 600; }
+  .early-lead { font-size: 13.5px; line-height: 1.5; color: #b9bec5; margin: 0 0 14px; }
+  .early-lead b { color: #fff; }
+  .early-list { margin: 0 0 20px; padding: 0; list-style: none; }
+  .early-list li { font-size: 13px; color: #d4d8dd; padding: 8px 0 8px 22px; position: relative; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .early-list li::before { content: ''; position: absolute; left: 2px; top: 15px; width: 7px; height: 7px; border-radius: 50%; background: #fff; }
+  .early-btn { width: 100%; padding: 15px; border: 0; border-radius: 13px; background: #fff; color: #0b0c0e; font-size: 15px; font-weight: 800; cursor: pointer; }
+  .early-btn:disabled { opacity: .6; }
+  .early-note { margin-top: 12px; font-size: 11.5px; color: #8d939b; line-height: 1.45; }
+</style>
+
 <script>
 
 /* ===== data.js ===== */
@@ -2575,7 +2610,7 @@ html, body { background: var(--bg); }
 
   const AI = {
     key: '',
-    model: 'deepseek-chat',
+    model: 'deepseek-flash',
     lastError: '',
     stats: { calls: 0, ok: 0, fail: 0 }
   };
@@ -2869,7 +2904,32 @@ html, body { background: var(--bg); }
   }
 
   /* ---------- публичный вызов ---------- */
+  async function serverChat(messages) {
+    if (!root.SRV || !root.SRV.cfg || !root.SRV.cfg.backend) return { ok: false, error: 'no_backend' };
+    const r = await root.SRV.call('/ai', { messages: messages.slice(-14) }, 22000);
+    if (!r.ok) return { ok: false, error: r.error, limit: r.error === 'limit' };
+    AI.stats.ok++;
+    return { ok: true, content: String(r.data.content || '').trim() };
+  }
+
+  AI.backend = function () { return !!(root.SRV && root.SRV.cfg && root.SRV.cfg.backend); };
+
+  // если сервер включён — говорим через него (ключ живёт на сервере)
+  async function viaServer(ctx, who) {
+    if (!AI.backend()) return null;
+    const sys = who === 'seller' ? sellerSystem(ctx) + '\n' + sellerAction(ctx.intent, ctx)
+                                 : buyerSystem(ctx) + '\n' + buyerAction(ctx.intent, ctx);
+    const messages = [{ role: 'system', content: sys }].concat(historyToMessages(ctx.chat, 8));
+    messages.push({ role: 'system', content: 'Ответь одной короткой репликой.' });
+    const r = await serverChat(messages);
+    if (!r.ok) return { text: null, limit: r.limit, error: r.error };
+    return { text: clean(r.content) };
+  }
+
   AI.sellerReply = async function (ctx) {
+    const s = await viaServer(ctx, 'seller');
+    if (s && s.text) return { text: s.text, via: 'llm' };
+    if (s && s.limit) return { text: AI.sellerLocal(ctx.intent, ctx), via: 'local', limit: true };
     if (!AI.available()) return { text: AI.sellerLocal(ctx.intent, ctx), via: 'local' };
     const messages = [{ role: 'system', content: sellerSystem(ctx) + '\n' + sellerAction(ctx.intent, ctx) }]
       .concat(historyToMessages(ctx.chat, 8));
@@ -2880,6 +2940,9 @@ html, body { background: var(--bg); }
   };
 
   AI.buyerReply = async function (ctx) {
+    const s = await viaServer(ctx, 'buyer');
+    if (s && s.text) return { text: s.text, via: 'llm' };
+    if (s && s.limit) return { text: AI.buyerLocal(ctx.intent, ctx), via: 'local', limit: true };
     if (!AI.available()) return { text: AI.buyerLocal(ctx.intent, ctx), via: 'local' };
     const messages = [{ role: 'system', content: buyerSystem(ctx) + '\n' + buyerAction(ctx.intent, ctx) }]
       .concat(historyToMessages(ctx.chat, 8));
@@ -2911,6 +2974,123 @@ html, body { background: var(--bg); }
   if (typeof module !== 'undefined' && module.exports) module.exports = AI;
 })(typeof window !== 'undefined' ? window : globalThis);
 
+
+
+/* ===== server.js (Mide) ===== */
+(function (root) {
+  'use strict';
+  const CFG = { backend: '', paid: false };
+  let uid = '';
+
+  function init() {
+    try {
+      const tg = root.Telegram && root.Telegram.WebApp;
+      if (tg) {
+        try { tg.ready(); tg.expand(); } catch (e) {}
+        uid = (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) ? 'tg:' + tg.initDataUnsafe.user.id : '';
+        CFG.paid = !!tg.initDataUnsafe && !!tg.initDataUnsafe.user;
+      }
+    } catch (e) {}
+    if (!uid) {
+      const q = new URLSearchParams(location.search);
+      uid = q.get('uid') || '';
+    }
+    if (!uid) {
+      let local = '';
+      try { local = localStorage.getItem('mide.uid') || ''; } catch (e) {}
+      if (!local) { local = 'web-' + Math.random().toString(36).slice(2, 10); try { localStorage.setItem('mide.uid', local); } catch (e) {} }
+      uid = local;
+    }
+    // сервер: если игра открыта в Telegram — берём адрес из настроек игры
+    CFG.backend = (root.MIDE_BACKEND || '').replace(/\/$/, '');
+  }
+
+  async function call(path, payload, timeout) {
+    if (!CFG.backend) return { ok: false, error: 'no_backend' };
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), timeout || 20000);
+    try {
+      const r = await fetch(CFG.backend + path, {
+        method: payload ? 'POST' : 'GET',
+        headers: { 'Content-Type': 'application/json', 'X-Mide-Uid': uid },
+        body: payload ? JSON.stringify(Object.assign({ uid: uid }, payload)) : undefined,
+        signal: ctrl.signal
+      });
+      clearTimeout(t);
+      const j = await r.json().catch(function () { return {}; });
+      if (!r.ok) return { ok: false, status: r.status, error: j.error || ('http_' + r.status), data: j };
+      return { ok: true, data: j };
+    } catch (e) {
+      clearTimeout(t);
+      return { ok: false, error: e && e.name === 'AbortError' ? 'timeout' : String(e && e.message || e) };
+    }
+  }
+
+  root.SRV = { init: init, call: call, uid: function () { return uid; }, cfg: CFG };
+  if (typeof module !== 'undefined' && module.exports) module.exports = root.SRV;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+
+/* ===== early access gate ===== */
+(function (root) {
+  'use strict';
+  const PRICE = 1;
+  const el = () => document.getElementById('early');
+
+  function show(note) {
+    const box = el();
+    if (!box) return;
+    const btn = document.getElementById('early-pay');
+    const n = document.getElementById('early-note');
+    if (btn) btn.textContent = 'Открыть чат с ботом — ' + PRICE + ' ★';
+    if (n) n.textContent = note || 'Оплата звёздами Telegram. После покупки вернись в игру — доступ включится сам.';
+    box.hidden = false;
+    // доступно только в Telegram
+    const tg = root.Telegram && root.Telegram.WebApp;
+    if (!tg || !tg.initData) {
+      if (btn) btn.disabled = false;
+      if (n) n.textContent = 'Открой игру через бота @' + (root.MIDE_BOT || 'MideSimBot') + ' в Telegram — там доступ оформляется в один тап.';
+    }
+  }
+
+  function hide() {
+    const box = el();
+    if (box) box.hidden = true;
+  }
+
+  async function pay() {
+    const tg = root.Telegram && root.Telegram.WebApp;
+    if (!tg || !tg.initData) { show('Оплата доступна только внутри Telegram.'); return; }
+    const b = document.getElementById('early-pay');
+    if (b) { b.disabled = true; b.textContent = 'Открываем...'; }
+    if (root.SRV && root.SRV.cfg.backend) await root.SRV.call('/invoice', {});
+    try { tg.close(); } catch (e) {}
+  }
+
+  async function gate() {
+    if (!root.SRV || !root.SRV.cfg.backend) return true;
+    const r = await root.SRV.call('/limits', null, 8000);
+    if (!r.ok) { show('Сервер недоступен — проверь подключение.'); return false; }
+    if (!r.data.paid) {
+      show(r.data.paid === false ? 'Игра в раннем доступе. Доступ — ' + PRICE + ' звезда.' : '');
+      return false;
+    }
+    hide();
+    return true;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (root.SRV) root.SRV.init();
+    const btn = document.getElementById('early-pay');
+    if (btn) btn.onclick = pay;
+    if (!root.SRV || !root.SRV.cfg.backend) return;
+    show('Проверяем доступ...');
+    gate();
+  });
+
+  root.GATE = { gate: gate, show: show, hide: hide, price: PRICE };
+  if (typeof module !== 'undefined' && module.exports) module.exports = root.GATE;
+})(typeof window !== 'undefined' ? window : globalThis);
 
 /* ===== ui.js ===== */
 /* ============================================================
