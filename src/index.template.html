@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Mide Simulator — перепродажа телефонов</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%230aa2f5'/%3E%3Crect x='10' y='6' width='12' height='20' rx='3.5' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+<style>
+<!--STYLE-->
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="topbar-row">
+      <div class="logo"><b>Mide</b><span>Simulator</span></div>
+      <div class="spacer"></div>
+      <div class="balance" id="balance">5 000 ₽</div>
+      <button class="icon-btn" id="btn-settings" data-act="open-settings" title="Настройки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="2.1" fill="#fff"/><circle cx="15.5" cy="12" r="2.1" fill="#fff"/><circle cx="8" cy="17" r="2.1" fill="#fff"/></svg>
+      </button>
+    </div>
+    <div class="topbar-sub">
+      <span class="pill" id="pill-day">День 1</span>
+      <span class="sep">·</span>
+      <span class="pill" id="pill-rep">★ 50</span>
+      <span class="sep">·</span>
+      <span class="pill" id="pill-skill">осмотр 10</span>
+      <div class="spacer"></div>
+      <button class="pill" data-act="next-day" style="border:0;cursor:pointer">Следующий день →</button>
+    </div>
+  </header>
+
+  <main class="content" id="content">
+    <section class="view active" id="view-feed"></section>
+    <section class="view" id="view-stock"></section>
+    <section class="view" id="view-listings"></section>
+    <section class="view" id="view-log"></section>
+  </main>
+
+  <nav class="tabbar">
+    <button class="tab on" data-act="tab" data-id="feed" data-tab="feed">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.6 12 3l9 7.6"/><path d="M5.6 9.4V21h12.8V9.4"/></svg></span><span>Лента</span>
+    </button>
+    <button class="tab" data-act="tab" data-id="stock" data-tab="stock">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.4 12 3l9 4.4-9 4.4-9-4.4z"/><path d="M3 7.4v9.2L12 21l9-4.4V7.4"/></svg></span><span>Склад</span><span class="dot gone" id="tab-badge-stock"></span>
+    </button>
+    <button class="tab" data-act="tab" data-id="listings" data-tab="listings">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12.3 12 20.8 3.2 12V3.2H12l8.5 9.1z"/><circle cx="8" cy="8" r="1.2"/></svg></span><span>Объявл.</span><span class="dot gone" id="tab-badge-list"></span>
+    </button>
+    <button class="tab" data-act="tab" data-id="log" data-tab="log">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V4M16 20v-6M22 20H2"/></svg></span><span>Журнал</span>
+    </button>
+  </nav>
+
+  <!-- объявление -->
+  <div class="overlay" id="ov-listing"></div>
+
+  <!-- чат -->
+  <div class="overlay" id="ov-chat"></div>
+
+  <!-- встреча -->
+  <div class="overlay" id="ov-meet">
+    <div class="ov-head">
+      <button class="back" data-act="close-ov" data-id="meet">←</button>
+      <div class="ov-title"><b>Встреча</b><span>Москва</span></div>
+    </div>
+    <div class="meet-body" id="ov-meet-body"></div>
+  </div>
+
+  <!-- карточка телефона на складе -->
+  <div class="overlay" id="ov-phone"></div>
+
+  <!-- настройки -->
+  <div class="overlay" id="ov-settings"></div>
+
+  <!-- модалка -->
+  <div class="modal-wrap" id="modal"></div>
+
+  <div class="toasts" id="toasts"></div>
+  <div class="deal-flash" id="flash"></div>
+</div>
+
+<script>
+<!--SCRIPTS-->
+</script>
+</body>
+</html>
