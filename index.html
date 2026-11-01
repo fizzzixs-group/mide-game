@@ -1172,7 +1172,7 @@ html[data-theme="dark"] .badge.fold{background:#122a3a!important;color:#63caff!i
 /* ---------------- НИЖНЕЕ МЕНЮ ---------------- */
 .av-bottom{
   position:fixed;left:0;right:0;bottom:0;z-index:40;
-  display:none;background:var(--av-bg);border-top:1px solid var(--av-line);
+  display:flex;background:var(--av-bg);border-top:1px solid var(--av-line);
 }
 .av-nav{
   flex:1;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;
@@ -1194,8 +1194,7 @@ html[data-theme="dark"] .badge.fold{background:#122a3a!important;color:#63caff!i
   .content{padding:12px 12px 80px}
   .cards{grid-template-columns:repeat(2,1fr)!important;gap:16px 10px!important}
   .card .thumb{height:160px!important;min-height:160px!important;max-height:160px!important}
-  .av-bottom{display:flex}
-}
+  .av-bottom{display:flex}}
 
 
 /* ---------------- фильтры: аккуратная строка ---------------- */
@@ -1323,12 +1322,9 @@ input:focus, textarea:focus, select:focus, button:focus {
   .av-header-bar { display: none !important; }
   .av-day { padding: 0 12px 8px !important; }
   .av-header-top { padding: 10px 12px 8px !important; }
-  .av-bottom { display: flex !important; }
-}
+  .av-bottom { display: flex !important; }}
 /* на компьютере нижнее меню не нужно */
-@media (min-width: 761px) {
-  .av-bottom { display: none !important; }
-}
+@media (min-width: 761px) {}
 
 
 /* ============================================================
@@ -1772,9 +1768,7 @@ label.btn{ display:inline-flex; align-items:center; justify-content:center; }
     padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px))!important;
   }
 }
-@media (min-width:761px){
-  .av-bottom{ display:none!important; }
-}
+
 
 /* строка дня на мобиле */
 @media (max-width:760px){
@@ -2007,7 +2001,7 @@ html[data-theme="dark"] .stat-row b.down, html[data-theme="dark"] .deal-sum.down
 }
 .av-nav span{ font-size: 9px !important; display: block; }
 .av-nav svg{ width: 19px !important; height: 19px !important; }
-@media (min-width: 761px){ .av-bottom{ display: none !important; } }
+@media (min-width: 761px){}
 
 
 /* ============================================================
@@ -2045,9 +2039,7 @@ html, body{ width:100%!important; max-width:100vw!important; overflow-x:hidden!i
 }
 .av-nav.on{ color: var(--av-blue) !important; }
 
-@media (min-width: 761px){
-  .av-bottom{ display: none !important; }
-}
+
 @media (max-width: 760px){
   .av-bottom{ display: flex !important; }
   .content, main.content{
@@ -2225,7 +2217,7 @@ html[data-theme="dark"] .defect-line.warn{
 /* ============================================================
    КОГДА ОТКРЫТО ОБЪЯВЛЕНИЕ — меню убираем, кнопка доступна
    ============================================================ */
-body.ov-open .av-bottom{ display: none !important; }
+body.ov-open .av-bottom{ display:flex; }
 body.ov-open{ overflow: hidden !important; }
 
 /* кнопка внизу объявления всегда над всем */
@@ -2318,16 +2310,11 @@ body.ov-open .av-bottom{ display: flex !important; }
 
 
 /* на компьютере нижнее меню не нужно */
-@media (min-width: 761px){
-  .av-bottom{ display: none !important; }
-  .av-balance-m{ display: none !important; }
-}
+
 
 
 /* ПК: меню скрыто всегда, даже при открытом объявлении */
-@media (min-width: 761px){
-  .av-bottom, body.ov-open .av-bottom, body .av-bottom{ display: none !important; }
-}
+@media (min-width: 761px){}
 /* мобильный: меню видно всегда */
 @media (max-width: 760px){
   .av-bottom, body.ov-open .av-bottom, body .av-bottom{ display: flex !important; }
@@ -2344,12 +2331,7 @@ html body.ov-open .av-bottom{
   opacity: 1 !important;
   transform: none !important;
 }
-@media (min-width: 761px){
-  html body .av-bottom,
-  html body.ov-open .av-bottom{
-    display: none !important;
-  }
-}
+
 
 /* ============================================================
    ЧАТ: нормальная ширина, кнопки в ряд, поле ввода видно
@@ -2666,6 +2648,19 @@ html body.ov-open .av-bottom{
 .modal .btn-row .btn{ flex: 1 !important; min-height: 46px !important; font-size: 14.5px !important; font-weight: 700 !important; border-radius: 12px !important; }
 .modal .btn.primary, .modal .btn-main{ background: var(--av-blue) !important; color: #fff !important; border-color: var(--av-blue) !important; }
 .modal .btn.ghost{ background: transparent !important; color: var(--av-ink) !important; }
+
+
+/* панель видна ВСЕГДА, на любом экране */
+.av-bottom, body .av-bottom, body.ov-open .av-bottom{
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+@media (min-width: 761px){
+  .av-balance-m{ display: none !important; }
+  .content, main.content{ padding-bottom: 24px !important; }
+}
 
 </style>
 </head>
@@ -7721,19 +7716,67 @@ const App = {
 
   /* нижнее меню выносим прямо в body, чтобы никакой контейнер его не ломал */
   document.body.classList.remove('ov-open');
+
+  /* Нижняя панель: выносим в body и ставим стили ИНЛАЙН,
+     чтобы никакие правила CSS её не спрятали. */
   function parkNav() {
+    let nav = document.querySelector('.av-bottom');
+    if (!nav || !nav.querySelector('.av-nav')) return;
+    if (nav.parentElement !== document.body) document.body.appendChild(nav);
+    nav.style.cssText = [
+      'position:fixed',
+      'left:0',
+      'right:0',
+      'bottom:0',
+      'width:100%',
+      'max-width:100%',
+      'z-index:2147483000',
+      'display:flex',
+      'visibility:visible',
+      'opacity:1',
+      'pointer-events:auto',
+      'transform:none',
+      'background:var(--av-card,#15181e)',
+      'border-top:1px solid var(--av-line,#252a33)',
+      'padding-bottom:env(safe-area-inset-bottom,0px)',
+      'box-sizing:border-box',
+      'min-height:54px'
+    ].join(';');
+    nav.querySelectorAll('.av-nav').forEach(function (b) {
+      b.style.cssText += [
+        'flex:1 1 0',
+        'min-width:0',
+        'display:flex',
+        'flex-direction:column',
+        'align-items:center',
+        'justify-content:center',
+        'gap:2px',
+        'padding:6px 0 5px',
+        'border:0',
+        'background:none',
+        'font-size:9px',
+        'line-height:1.1',
+        'overflow:hidden'
+      ].join(';') + ';';
+      const sp = b.querySelector('span');
+      if (sp) sp.style.cssText += 'font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;';
+      const svg = b.querySelector('svg');
+      if (svg) { svg.style.width = '19px'; svg.style.height = '19px'; svg.style.flex = '0 0 19px'; }
+    });
+  }
+  parkNav();
+  document.addEventListener('DOMContentLoaded', parkNav);
+  setTimeout(parkNav, 200);
+  setTimeout(parkNav, 800);
+  setTimeout(parkNav, 2000);
+
+  /* страховка: если панель пропала — вернуть */
+  setInterval(function () {
     const nav = document.querySelector('.av-bottom');
-    if (nav && nav.parentElement !== document.body) {
-      document.body.appendChild(nav);
-    }
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', parkNav);
-  } else {
-    parkNav();
-  }
-  setTimeout(parkNav, 300);
-  setTimeout(parkNav, 1500);
+    if (!nav) return;
+    if (nav.parentElement !== document.body) document.body.appendChild(nav);
+    if (getComputedStyle(nav).display === 'none' || nav.offsetHeight < 20) parkNav();
+  }, 1200);
 
 
 
