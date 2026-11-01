@@ -1734,6 +1734,101 @@ label.btn{ display:inline-flex; align-items:center; justify-content:center; }
 .pm-txt{ line-height:1.5; }
 .pm-txt b{ font-size:14px; }
 
+
+/* ============================================================
+   МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ — 7 кнопок, не уезжает под браузер
+   ============================================================ */
+.av-bottom{
+  position:fixed!important; left:0!important; right:0!important; bottom:0!important;
+  z-index:60!important;
+  display:none;
+  padding-bottom:env(safe-area-inset-bottom, 0px)!important;
+  background:var(--av-card)!important;
+  border-top:1px solid var(--av-line)!important;
+  box-sizing:border-box!important;
+}
+.av-nav{
+  flex:1 1 0!important;
+  min-width:0!important;
+  display:flex!important; flex-direction:column!important; align-items:center!important; justify-content:center!important;
+  gap:2px!important;
+  padding:7px 0 5px!important;
+  border:0!important; background:none!important; cursor:pointer!important;
+  color:var(--av-muted)!important;
+  font-size:9px!important; line-height:1.1!important;
+  overflow:hidden!important;
+}
+.av-nav svg{ width:19px!important; height:19px!important; flex:0 0 19px!important; }
+.av-nav span{
+  white-space:nowrap!important; overflow:hidden!important; text-overflow:ellipsis!important;
+  max-width:100%!important; font-size:9px!important;
+}
+.av-nav.on{ color:var(--av-blue)!important; }
+
+@media (max-width:760px){
+  .av-bottom{ display:flex!important; }
+  /* место под меню + безопасная зона */
+  .content, main.content{
+    padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px))!important;
+  }
+}
+@media (min-width:761px){
+  .av-bottom{ display:none!important; }
+}
+
+/* строка дня на мобиле */
+@media (max-width:760px){
+  .av-day{
+    display:flex!important; align-items:center!important; gap:8px!important;
+    padding:0 12px 8px!important; margin:0 auto!important; max-width:1420px!important;
+  }
+  .av-pill{ font-size:12px!important; padding:4px 9px!important; }
+  .av-next{ font-size:12.5px!important; }
+}
+
+
+/* ============================================================
+   ЖУРНАЛ
+   ============================================================ */
+.log-balance{ font-size:26px; font-weight:800; color:var(--av-ink); }
+.goal-bar{ height:8px; border-radius:6px; background:var(--av-sub); overflow:hidden; margin:10px 0 8px; }
+.goal-bar i{ display:block; height:100%; background:var(--av-blue); border-radius:6px; transition:width .5s ease; }
+.log-sub{ font-size:12px; color:var(--av-muted); }
+.stat-rows{ display:flex; flex-direction:column; }
+.stat-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 0; border-top:1px solid var(--av-line); font-size:13px; color:var(--av-muted);
+}
+.stat-row:first-child{ border-top:0; }
+.stat-row b{ font-size:14px; color:var(--av-ink); font-weight:700; }
+.stat-row b.up, .deal-sum.up{ color:#00a05a; }
+.stat-row b.down, .deal-sum.down{ color:#e03131; }
+html[data-theme="dark"] .stat-row b.up, html[data-theme="dark"] .deal-sum.up{ color:#5ee29a; }
+html[data-theme="dark"] .stat-row b.down, html[data-theme="dark"] .deal-sum.down{ color:#ff8f8f; }
+
+.deal-row{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 0; border-top:1px solid var(--av-line);
+}
+.deal-row:first-of-type{ border-top:0; }
+.deal-day{
+  flex:0 0 34px; font-size:11px; font-weight:700; color:var(--av-muted);
+  background:var(--av-sub); border-radius:6px; text-align:center; padding:3px 0;
+}
+.deal-main{ flex:1; min-width:0; }
+.deal-main b{ display:block; font-size:13.5px; color:var(--av-ink); font-weight:600; }
+.deal-main span{ display:block; font-size:11.5px; color:var(--av-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.deal-sum{ font-size:14px; font-weight:800; white-space:nowrap; }
+
+.log-row{ display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--av-line); font-size:12.5px; }
+.log-row:first-of-type{ border-top:0; }
+.log-day{ flex:0 0 32px; font-size:11px; font-weight:700; color:var(--av-muted); }
+.log-txt{ flex:1; color:var(--av-ink); line-height:1.4; }
+
+/* защита от огромных картинок */
+.main-phone .mp-photo, .mp-photo { max-width:64px!important; max-height:64px!important; width:64px!important; height:64px!important; object-fit:contain!important; }
+#view-log img{ max-width:120px!important; max-height:120px!important; }
+
 </style>
 </head>
 <body>
@@ -1765,6 +1860,11 @@ label.btn{ display:inline-flex; align-items:center; justify-content:center; }
         <span id="av-name">Перекупщик</span>
       </button>
     </div>
+    <div class="av-day">
+      <span class="av-pill" id="pill-day">День 1</span>
+      <span class="av-spacer"></span>
+      <button class="av-next" data-act="next-day">Следующий день →</button>
+    </div>
     
   </header>
 
@@ -1786,16 +1886,19 @@ label.btn{ display:inline-flex; align-items:center; justify-content:center; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-9a8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 7.9z"/></svg><span>Чаты</span>
     </button>
     <button class="av-nav" data-act="tab" data-id="stock" data-tab="stock">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/></svg><span>Телефоны</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/></svg><span>Склад</span>
     </button>
     <button class="av-nav" data-act="tab" data-id="listings" data-tab="listings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg><span>Объявления</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg><span>Объявл.</span>
+    </button>
+    <button class="av-nav" data-act="tab" data-id="log" data-tab="log">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg><span>Журнал</span>
     </button>
     <button class="av-nav" data-act="tab" data-id="profile" data-tab="profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Профиль</span>
     </button>
     <button class="av-nav" data-act="tab" data-id="settings" data-tab="settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M20 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Настройки</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M20 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Настр.</span>
     </button>
   </nav>
 
@@ -4680,66 +4783,53 @@ const App = {
       const s = this.state;
       const GOAL = 500000;
       const pct = Math.min(100, s.balance / GOAL * 100);
-      const mp = E.mainPhone(s);
+      const st = s.stats;
 
-      // профиль
-      let html = '<div class="profile">' +
-        '<div class="avatar" style="width:46px;height:46px;font-size:17px">Т</div>' +
-        '<div class="pf"><div class="pn">Ты, перекуп</div>' +
-        '<div class="ps">★ ' + Math.round(s.rep) + ' · куплено ' + s.stats.bought + ' · продано ' + s.stats.sold + ' · ' + esc(E.modeOf(s).name.toLowerCase()) + '</div></div></div>';
+      let html = '<div class="prof-page">' +
+        '<div class="prof-card">' +
+        '<div class="prof-h">Прогресс</div>' +
+        '<div class="log-balance">' + money(s.balance) + '</div>' +
+        '<div class="goal-bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+        '<div class="log-sub">Цель ' + money(GOAL) + ' · осталось ' + money(Math.max(0, GOAL - s.balance)) +
+        ' · ' + Math.round(pct) + '%</div>' +
+        '</div>' +
 
-      if (mp) {
-        const m = E.MODELS_BY_ID[mp.modelId];
-        html += '<div class="main-phone">' + root.PHOTO.ph(m.id, 0, 0, 'mp-photo') +
-          '<div class="mpi"><div class="tiny muted">Мой телефон</div>' +
-          '<div class="mpn">' + esc(m.name) + ' ' + mp.storage + ' ГБ</div>' +
-          '<div class="mps">' + esc(mp.color) + ' · ' + money(E.playerValue(mp)) + '</div></div>' +
-          '<button class="btn sm ghost" data-act="go-stock" style="width:auto">Сменить</button></div>';
-      } else {
-        html += '<div class="main-phone"><div class="mpi"><div class="mpn">Основного телефона нет</div>' +
-          '<div class="tiny muted">Выбери аппарат на складе — и ходи с ним</div></div>' +
-          '<button class="btn sm primary" data-act="go-stock" style="width:auto">Выбрать</button></div>';
-      }
+        '<div class="prof-card">' +
+        '<div class="prof-h">Статистика</div>' +
+        '<div class="stat-rows">' +
+        '<div class="stat-row"><span>Баланс</span><b class="' + (s.balance >= 5000 ? 'up' : 'down') + '">' + money(s.balance) + '</b></div>' +
+        '<div class="stat-row"><span>Общий профит</span><b class="' + (st.profit >= 0 ? 'up' : 'down') + '">' +
+        (st.profit >= 0 ? '+' : '') + money(st.profit) + '</b></div>' +
+        '<div class="stat-row"><span>Куплено / продано</span><b>' + st.bought + ' / ' + st.sold + '</b></div>' +
+        '<div class="stat-row"><span>Лучшая сделка</span><b class="up">' + (st.bestDeal ? '+' + money(st.bestDeal) : '—') + '</b></div>' +
+        '<div class="stat-row"><span>День</span><b>' + s.day + '</b></div>' +
+        '</div></div>' +
 
-      html += '<div class="goal">' +
-        '<div class="k">Цель перекупа</div>' +
-        '<div class="v">' + money(s.balance) + ' из ' + money(GOAL) + '</div>' +
-        '<div class="bar"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
-        '<div class="sub">' + (pct >= 100
-          ? 'Готово. Ты легенда Авито — можно начинать заново.'
-          : 'Осталось ' + money(GOAL - s.balance) + ' · ' + Math.round(pct) + '%') + '</div>' +
-        '</div>';
-      html += '<div class="section-title">Статистика</div><div class="stat-grid">' +
-        stat('Баланс', money(s.balance), s.balance >= 5000 ? 'green' : 'red') +
-        stat('Общий профит', (s.stats.profit >= 0 ? '+' : '') + money(s.stats.profit), s.stats.profit >= 0 ? 'green' : 'red') +
-        stat('Куплено / продано', s.stats.bought + ' / ' + s.stats.sold, '') +
-        stat('Лучшая сделка', s.stats.bestDeal ? '+' + money(s.stats.bestDeal) : '—', 'green') +
-        '</div>';
+        '<div class="prof-card">' +
+        '<div class="prof-h">Сделки <span class="muted">' + (s.deals || []).length + '</span></div>' +
+        ((s.deals || []).length ? (s.deals || []).slice(0, 40).map(function (d) {
+          const m = E.MODELS_BY_ID[d.modelId] || {};
+          const isBuy = d.type === 'buy';
+          const isSell = d.type === 'sell';
+          const sign = isBuy ? '−' : '+';
+          const label = isBuy ? 'Купил' : isSell ? 'Продал' : 'Сдал';
+          return '<div class="deal-row">' +
+            '<div class="deal-day">Д' + d.day + '</div>' +
+            '<div class="deal-main"><b>' + label + ' ' + esc(m.name || '') + '</b>' +
+            '<span>' + esc(d.note || '') + '</span></div>' +
+            '<div class="deal-sum ' + (isBuy ? 'down' : 'up') + '">' + sign + money(d.amount || 0) + '</div>' +
+            '</div>';
+        }).join('') : '<div class="empty"><b>Сделок пока нет</b><p>Купи телефон в ленте и продай дороже.</p></div>') +
+        '</div>' +
 
-      // история сделок
-      const deals = s.deals || [];
-      html += '<div class="section-title mt16">Сделки <span class="hint">' + deals.length + '</span></div>';
-      if (!deals.length) html += '<div class="empty"><p>Ещё ни одной сделки.</p></div>';
-      for (const d of deals.slice(0, 40)) {
-        const m = E.MODELS_BY_ID[d.modelId];
-        const buy = d.type === 'buy';
-        const sell = d.type === 'sell';
-        html += '<div class="txn">' +
-          '<div class="txn-l"><span class="txn-day">Д' + d.day + '</span><span class="txn-name">' +
-          (buy ? 'Купил ' : sell ? 'Продал ' : 'Сдал ') + esc(m.name) + ' ' + (d.storage || '') + ' ГБ</span></div>' +
-          '<div class="txn-sum ' + (buy ? 'neg' : 'pos') + '">' + (buy ? '−' : '+') + money(d.price) + '</div>' +
-          (sell
-            ? '<div class="txn-sub">куплен за ' + money(d.boughtFor) + (d.repair ? ' · ремонт ' + money(d.repair) : '') + '</div>' +
-              '<div class="txn-profit ' + (d.profit >= 0 ? 'pos' : 'neg') + '">' + (d.profit >= 0 ? '+' : '') + money(d.profit) + '</div>'
-            : '') +
-          '</div>';
-      }
+        '<div class="prof-card">' +
+        '<div class="prof-h">Журнал событий <span class="muted">' + (s.log || []).length + '</span></div>' +
+        ((s.log || []).length ? (s.log || []).slice(0, 60).map(function (e) {
+          return '<div class="log-row"><span class="log-day">Д' + (e.day || s.day) + '</span>' +
+            '<span class="log-txt">' + esc(e.text || '') + '</span></div>';
+        }).join('') : '<div class="empty"><p>Пока пусто.</p></div>') +
+        '</div></div>';
 
-      html += '<div class="section-title mt16">События</div>';
-      if (!s.log.length) html += '<div class="empty"><p>Пока тихо.</p></div>';
-      for (const e of s.log) {
-        html += '<div class="log-item ' + (e.tone || '') + '"><div class="day">Д' + e.day + '</div><div>' + esc(e.text) + '</div></div>';
-      }
       box.innerHTML = html;
     }
   };
