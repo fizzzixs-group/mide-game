@@ -2484,6 +2484,119 @@ html body.ov-open .av-bottom{
   .overlay .quick{ max-height: 96px; overflow-y: auto; }
 }
 
+
+/* ============================================================
+   ВСТРЕЧА: нормальная вёрстка на компьютере
+   ============================================================ */
+#ov-meet .meet-body, #ov-meet .ov-meet-body, #ov-meet-body{
+  max-width: 1080px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  padding: 20px 24px 110px !important;
+  box-sizing: border-box !important;
+}
+#ov-meet .meet-head{
+  text-align: center !important;
+  margin-bottom: 18px !important;
+}
+#ov-meet .meet-head .place{
+  font-size: 12.5px !important; color: var(--av-muted) !important; margin-bottom: 4px !important;
+}
+#ov-meet .meet-head h2{
+  font-size: 24px !important; font-weight: 800 !important; color: var(--av-ink) !important; margin: 0 0 6px !important;
+}
+#ov-meet .meet-head p{
+  font-size: 13.5px !important; color: var(--av-muted) !important; margin: 0 !important;
+}
+/* сетка проверок */
+#ov-meet .checks{
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  margin-bottom: 18px !important;
+}
+#ov-meet .check{
+  position: relative !important;
+  display: block !important;
+  text-align: left !important;
+  padding: 16px !important;
+  min-height: 120px !important;
+  border: 1px solid var(--av-line) !important;
+  border-radius: 14px !important;
+  background: var(--av-card) !important;
+  color: var(--av-ink) !important;
+  cursor: pointer !important;
+  transition: border-color .15s ease, transform .12s ease !important;
+}
+#ov-meet .check:hover{ border-color: var(--av-blue) !important; transform: translateY(-1px) !important; }
+#ov-meet .check.done{ opacity: .75 !important; }
+#ov-meet .check .ci{
+  font-size: 20px !important; margin-bottom: 8px !important; color: var(--av-muted) !important;
+}
+#ov-meet .check .cn{
+  font-size: 15px !important; font-weight: 700 !important; color: var(--av-ink) !important; margin-bottom: 4px !important;
+}
+#ov-meet .check .cd{
+  font-size: 12px !important; color: var(--av-muted) !important; line-height: 1.35 !important;
+}
+#ov-meet .check .fee{
+  position: absolute !important; top: 12px !important; right: 14px !important;
+  font-size: 11.5px !important; font-weight: 700 !important; color: var(--av-ink) !important;
+}
+#ov-meet .check .res{
+  margin-top: 8px !important; font-size: 12px !important; font-weight: 600 !important;
+}
+#ov-meet .check .res.ok{ color: #00a05a !important; }
+#ov-meet .check .res.bad{ color: #e03131 !important; }
+/* итог */
+#ov-meet .meet-summary{
+  background: var(--av-card) !important;
+  border: 1px solid var(--av-line) !important;
+  border-radius: 14px !important;
+  padding: 16px 18px !important;
+  font-size: 13.5px !important;
+  color: var(--av-ink) !important;
+  margin-bottom: 14px !important;
+  line-height: 1.55 !important;
+}
+/* кнопки */
+#ov-meet .meet-actions{
+  display: grid !important;
+  grid-template-columns: 2fr 1fr 1fr !important;
+  gap: 10px !important;
+}
+#ov-meet .meet-actions .btn{
+  min-height: 50px !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+}
+@media (max-width: 900px){
+  #ov-meet .checks{ grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+  #ov-meet .meet-actions{ grid-template-columns: 1fr !important; }
+}
+@media (max-width: 760px){
+  #ov-meet-body{ padding: 14px 14px 90px !important; }
+  #ov-meet .checks{ grid-template-columns: repeat(2, minmax(0,1fr)) !important; gap: 8px !important; }
+  #ov-meet .check{ min-height: 104px !important; padding: 12px !important; }
+  #ov-meet .check .cn{ font-size: 13.5px !important; }
+  #ov-meet .check .cd{ font-size: 11px !important; }
+  #ov-meet .meet-head h2{ font-size: 19px !important; }
+}
+
+
+/* встреча: главная кнопка синяя */
+#ov-meet .meet-actions .btn:first-child{
+  background: var(--av-blue) !important;
+  color: #fff !important;
+  border-color: var(--av-blue) !important;
+}
+#ov-meet .meet-actions .btn:last-child{
+  background: transparent !important;
+  color: var(--av-muted) !important;
+}
+#ov-meet .meet-actions .btn:hover{ filter: brightness(1.05); }
+
 </style>
 </head>
 <body>
