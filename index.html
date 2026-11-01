@@ -1468,6 +1468,141 @@ body { display: block !important; }
   .card .thumb{ transition:none!important; }
 }
 
+
+/* ============================================================
+   УБИРАЕМ ВСЁ ЗОЛОТОЕ/ЯНТАРНОЕ — только синий Авито
+   ============================================================ */
+.pill.amber, .amber, .iq-mid, .knows-bar i.iq-mid,
+.knows-bar i, .iq-low, .iq-high, [class*="amber"] {
+  background: var(--av-blue) !important;
+  color: #fff !important;
+  border-color: var(--av-blue) !important;
+}
+.knows-bar { background: var(--av-sub) !important; }
+.knows-bar i { background: var(--av-blue) !important; }
+
+/* любые жёлтые/золотые рамки и тени */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+*:focus, *:focus-visible, *:focus-within {
+  outline: none !important;
+  box-shadow: none !important;
+}
+a, button, input, select, textarea, div, span, section, main, header, nav {
+  outline-color: transparent !important;
+}
+
+
+/* ============================================================
+   ВКЛАДКИ: профиль, настройки, чаты — страницы, не окна
+   ============================================================ */
+.prof-page{ max-width:900px; margin:0 auto; display:flex; flex-direction:column; gap:14px; }
+.prof-card{
+  background:var(--av-card); border:1px solid var(--av-line); border-radius:14px;
+  padding:16px 18px;
+}
+.prof-h{ font-size:15px; font-weight:700; color:var(--av-ink); margin-bottom:8px; }
+.prof-top{ display:flex; align-items:center; gap:12px; }
+.prof-name b{ display:block; font-size:17px; font-weight:700; color:var(--av-ink); }
+.prof-name span{ display:block; font-size:12.5px; color:var(--av-muted); }
+.prof-rate{ margin-left:auto; text-align:right; font-size:15px; font-weight:700; color:var(--av-ink); }
+.prof-rate span{ display:block; font-size:11.5px; font-weight:400; color:var(--av-muted); }
+.prof-about{ margin-top:10px; font-size:13px; color:var(--av-muted); line-height:1.45; }
+.avatar{ width:56px; height:56px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:24px; font-weight:800; flex:0 0 56px; }
+.avatar-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }
+.av-btn{ width:40px; height:40px; border-radius:50%; border:1px solid var(--av-line); background:var(--av-sub); color:var(--av-ink); font-size:16px; cursor:pointer; }
+.av-btn.on{ border:2px solid var(--av-blue); background:#e6f4ff; color:var(--av-blue); }
+html[data-theme="dark"] .av-btn.on{ background:#12314a; color:#63caff; }
+
+.promo-state{ font-size:12.5px; color:var(--av-muted); margin-bottom:6px; }
+.promo-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid var(--av-line); }
+.pr-txt b{ display:block; font-size:13.5px; color:var(--av-ink); }
+.pr-txt span{ display:block; font-size:12px; color:var(--av-muted); }
+.promo-row .btn{ width:auto !important; min-width:100px; }
+
+.review-row{ padding:10px 0; border-top:1px solid var(--av-line); }
+.rev-stars{ color:#f5a623; font-size:13px; letter-spacing:1px; }
+.rev-text{ font-size:13px; color:var(--av-ink); margin-top:3px; line-height:1.45; }
+.rev-day{ font-size:11.5px; color:var(--av-muted); margin-top:2px; }
+
+.theme-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.theme-row .btn{ flex:1; min-width:110px; }
+
+/* ---------------- ЧАТЫ ---------------- */
+.chats-head{ display:flex; align-items:center; gap:8px; font-size:16px; font-weight:700; color:var(--av-ink); margin:4px 0 12px; }
+.chats-head span{ font-size:13px; font-weight:400; color:var(--av-muted); }
+.chats-list{ display:flex; flex-direction:column; gap:2px; }
+.chat-row{
+  display:flex; gap:12px; padding:12px; border-radius:12px; cursor:pointer;
+  transition:background .16s ease;
+}
+.chat-row:hover{ background:var(--av-sub); }
+.chat-pic{
+  width:64px; height:64px; flex:0 0 64px; border-radius:10px; background:#fff;
+  display:grid; place-items:center; overflow:hidden; border:1px solid var(--av-line);
+}
+.chat-pic .pphoto{ width:100%; height:100%; object-fit:contain; }
+.chat-main{ flex:1; min-width:0; }
+.chat-top{ display:flex; align-items:center; gap:8px; }
+.chat-top b{ font-size:14.5px; color:var(--av-ink); }
+.chat-unread{ background:var(--av-blue); color:#fff; font-size:11px; font-weight:700; border-radius:10px; padding:1px 7px; }
+.chat-sub{ font-size:12.5px; color:var(--av-muted); margin-top:1px; }
+.chat-ads{ display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.chat-ad-tag{ font-size:11px; background:var(--av-sub); color:var(--av-muted); border-radius:6px; padding:2px 7px; }
+.chat-ad-price{ font-size:12.5px; font-weight:700; color:var(--av-ink); }
+.chat-ad-stage{ font-size:11px; color:var(--av-blue); font-weight:600; }
+@media (max-width:620px){ .chat-pic{ width:52px; height:52px; flex:0 0 52px; } }
+
+
+/* ============================================================
+   СКЛАД — карточка как на макете: фото слева, текст справа
+   ============================================================ */
+.stock-grid{
+  grid-template-columns:repeat(2, minmax(0,1fr))!important;
+  gap:18px!important;
+}
+@media (max-width: 900px){ .stock-grid{ grid-template-columns:1fr!important; } }
+
+.stock-grid .stock-item{
+  display:block!important; padding:0!important;
+  border:1px solid var(--av-line)!important; border-radius:16px!important;
+  background:var(--av-card)!important; overflow:hidden!important;
+}
+.stock-grid .stock-top{
+  display:flex!important; align-items:stretch!important; gap:0!important; padding:0!important;
+}
+.stock-grid .thumb{
+  position:relative!important;
+  width:190px!important; min-width:190px!important; flex:0 0 190px!important;
+  height:190px!important; min-height:190px!important; max-height:190px!important;
+  margin:0!important; border-radius:0!important; background:#fff!important;
+}
+.stock-grid .thumb .svg-wrap{
+  position:absolute!important; inset:0!important; padding:10px!important;
+  display:grid!important; place-items:center!important; background:#fff!important;
+}
+.stock-grid .thumb img{ width:100%!important; height:100%!important; object-fit:contain!important; }
+.stock-grid .stock-info{
+  flex:1!important; min-width:0!important; padding:14px 16px!important;
+  display:flex!important; flex-direction:column!important; gap:4px!important;
+}
+.stock-grid .nm{ font-size:16px!important; font-weight:700!important; color:var(--av-ink)!important; }
+.stock-grid .sub{ font-size:12px!important; color:var(--av-muted)!important; }
+.stock-grid .val{ font-size:16px!important; font-weight:800!important; color:var(--av-ink)!important; }
+.stock-grid .stock-defects{ display:flex; gap:5px; flex-wrap:wrap; }
+.stock-grid .stock-actions{ padding:0 16px 14px!important; }
+.stock-grid .btn{ width:100%!important; }
+@media (max-width:520px){
+  .stock-grid .thumb{ width:130px!important; min-width:130px!important; flex:0 0 130px!important; height:130px!important; min-height:130px!important; }
+  .stock-grid .nm{ font-size:14px!important; }
+  .stock-grid .val{ font-size:14px!important; }
+}
+
+
+/* текст по центру по вертикали, без пустоты */
+.stock-grid .stock-info{ justify-content:center!important; }
+
 </style>
 </head>
 <body>
@@ -1486,17 +1621,18 @@ body { display: block !important; }
     </div>
     <div class="av-header-bar">
       <button class="av-tab on" data-act="tab" data-id="feed" data-tab="feed">Объявления</button>
+      <button class="av-tab" data-act="tab" data-id="chats" data-tab="chats">Сообщения</button>
       <button class="av-tab" data-act="tab" data-id="stock" data-tab="stock">Мои телефоны</button>
       <button class="av-tab" data-act="tab" data-id="listings" data-tab="listings">Мои объявления</button>
       <div class="av-spacer"></div>
       <div class="av-balance" id="balance">5 000 ₽</div>
-      <button class="av-icon-btn" data-act="open-profile" title="Профиль">
+      <button class="av-icon-btn" data-act="tab" data-id="profile" title="Профиль">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
       </button>
-      <button class="av-icon-btn" data-act="open-settings" title="Настройки" id="btn-settings">
+      <button class="av-icon-btn" data-act="tab" data-id="settings" title="Настройки" id="btn-settings">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
       </button>
-      <button class="av-profile-btn" data-act="open-profile">
+      <button class="av-profile-btn" data-act="tab" data-id="profile">
         <span class="av-ava" id="av-ava">●</span>
         <span id="av-name">Перекупщик</span>
       </button>
@@ -1512,35 +1648,32 @@ body { display: block !important; }
 
   <main class="content" id="content">
     <section class="view active" id="view-feed"></section>
+    <section class="view" id="view-chats"></section>
     <section class="view" id="view-stock"></section>
     <section class="view" id="view-listings"></section>
     <section class="view" id="view-log"></section>
+    <section class="view" id="view-profile"></section>
+    <section class="view" id="view-settings"></section>
   </main>
 
   <nav class="av-bottom">
     <button class="av-nav on" data-act="tab" data-id="feed" data-tab="feed">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
-      <span>Поиск</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><span>Поиск</span>
+    </button>
+    <button class="av-nav" data-act="tab" data-id="chats" data-tab="chats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-9a8.4 8.4 0 0 1 8.4-8.4 8.4 8.4 0 0 1 8.5 7.9z"/></svg><span>Чаты</span>
     </button>
     <button class="av-nav" data-act="tab" data-id="stock" data-tab="stock">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/></svg>
-      <span>Мои телефоны</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/></svg><span>Телефоны</span>
     </button>
     <button class="av-nav" data-act="tab" data-id="listings" data-tab="listings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg>
-      <span>Объявления</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg><span>Объявления</span>
     </button>
-    <button class="av-nav" data-act="tab" data-id="log" data-tab="log">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h13"/></svg>
-      <span>Журнал</span>
+    <button class="av-nav" data-act="tab" data-id="profile" data-tab="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Профиль</span>
     </button>
-    <button class="av-nav" data-act="open-profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
-      <span>Профиль</span>
-    </button>
-    <button class="av-nav" data-act="open-settings" id="nav-settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-      <span>Настройки</span>
+    <button class="av-nav" data-act="tab" data-id="settings" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M20 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Настройки</span>
     </button>
   </nav>
 
@@ -4189,9 +4322,12 @@ const App = {
 
     renderView() {
       if (this.view === 'feed') this.renderFeed();
+      else if (this.view === 'chats') { if (this.openChats) this.openChats(); }
       else if (this.view === 'stock') this.renderStock();
       else if (this.view === 'listings') this.renderListings();
       else if (this.view === 'log') this.renderLog();
+      else if (this.view === 'profile') { if (this.renderProfile) this.renderProfile(); }
+      else if (this.view === 'settings') { if (this.renderSettings) this.renderSettings(); }
     },
 
     renderHeader() {
@@ -4542,11 +4678,7 @@ const App = {
       '<button class="btn sm' + (EXTRA.getTheme() === 'dark' ? ' primary' : ' ghost') + '" data-theme-set="dark">Тёмная</button>' +
       '<button class="btn sm' + (EXTRA.getTheme() === 'system' ? ' primary' : ' ghost') + '" data-theme-set="system">Системная</button>' +
       '</div></div>' +
-      '<div class="stock-item mt12">' +
-      '<div class="row"><div class="txt"><b>Профиль</b><span id="prof-line">' + esc(EXTRA.profile(s).name) +
-      ' · отзывов: ' + EXTRA.rating(s).count + (EXTRA.rating(s).count ? ' · ' + EXTRA.rating(s).avg + ' ★' : '') + '</span></div>' +
-      '<button class="btn sm primary" id="btn-profile" style="width:auto">Открыть</button></div>' +
-      '</div>' +
+
       '<div class="stock-item mt12">' +
       '<div class="row"><div class="txt"><b>Продвижение</b><span id="promo-line">' +
       (EXTRA.promoActive(s) ? EXTRA.promoOf(s).name + ', осталось ' + EXTRA.promoLeft(s) + ' дн.' : 'не подключено · 2–4 покупателя в день') +
@@ -4575,7 +4707,6 @@ const App = {
         App.toast('Тема: ' + b.textContent, '');
       };
     });
-    if ($('#btn-profile')) $('#btn-profile').onclick = () => App.openProfile();
     if ($('#btn-promo')) $('#btn-promo').onclick = () => App.openPromo();
     $('#btn-key-save').onclick = () => {
       const k = $('#inp-key').value.trim();
@@ -6178,6 +6309,300 @@ const App = {
       });
     }
   };
+})(window);
+
+
+/* ===== tabs.js ===== */
+/* ============================================================
+   MIDE — вкладки «Профиль», «Настройки», «Чаты».
+   Всё рисуется в секции #view-*, без всплывающих окон.
+   ============================================================ */
+(function (root) {
+  'use strict';
+  const App = root.App;
+  if (!App) return;
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+  function money(n) {
+    const v = Math.round(n || 0);
+    return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  }
+  const $ = (s) => document.querySelector(s);
+
+  /* ---------------- ЧАТЫ ---------------- */
+  // все чаты: по моим объявлениям (мне пишут) и по чужим (я пишу продавцу)
+  function collectChats(state) {
+    const out = [];
+    // 1) мне пишут покупатели по моим объявлениям
+    for (const l of state.myListings || []) {
+      const buyers = (l.buyers || []).filter((b) => b.stage !== 'lost');
+      if (!buyers.length) continue;
+      const last = buyers[buyers.length - 1];
+      const unread = buyers.filter((b) => !b.seen).length;
+      out.push({
+        kind: 'sell',
+        listing: l,
+        title: (root.Engine.MODELS_BY_ID[l.modelId] || {}).name + ' ' + l.storage + ' ГБ',
+        price: l.ask,
+        last: last,
+        unread: unread,
+        count: buyers.length,
+        when: state.day
+      });
+    }
+    // 2) я пишу продавцам в ленте
+    for (const l of state.listings || []) {
+      if (!l.chat || !l.chat.length) continue;
+      const msgs = l.chat.filter((m) => m.from !== 'sys');
+      if (!msgs.length) continue;
+      out.push({
+        kind: 'buy',
+        listing: l,
+        title: (root.Engine.MODELS_BY_ID[l.modelId] || {}).name + ' ' + l.storage + ' ГБ',
+        price: l.ask,
+        last: { name: l.sellerName || 'Продавец', stage: l.chatStage || 'chat' },
+        unread: 0,
+        count: 1,
+        when: state.day
+      });
+    }
+    return out;
+  }
+
+  App.openChats = function () {
+    const box = $('#view-chats');
+    if (!box) return;
+    const s = this.state;
+    const chats = collectChats(s);
+    let html = '<div class="chats-head"><b>Сообщения</b><span>' + chats.length + '</span></div>';
+    if (!chats.length) {
+      html += '<div class="empty"><b>Пока пусто</b><p>Выставь телефон — покупатели начнут писать. Или напиши продавцу в ленте.</p></div>';
+      box.innerHTML = html;
+      return;
+    }
+    html += '<div class="chats-list">';
+    for (const c of chats) {
+      const m = root.Engine.MODELS_BY_ID[c.listing.modelId] || {};
+      const pic = root.PHOTO ? root.PHOTO.ph(m.id) : '';
+      const who = c.kind === 'sell' ? (c.last.name || 'Покупатель') : (c.last.name || 'Продавец');
+      const st = c.kind === 'sell' ? (c.last.stage || '') : '';
+      const stageName = ({ chat: 'переписка', meet: 'встреча', agreed: 'договорились', done: 'продано' })[st] || '';
+      html += '<div class="chat-row" data-chat="' + (c.kind === 'sell' ? c.listing.id : c.listing.id) + '" data-kind="' + c.kind + '">' +
+        '<div class="chat-pic">' + pic + '</div>' +
+        '<div class="chat-main">' +
+        '<div class="chat-top"><b>' + esc(who) + '</b>' +
+        (c.unread ? '<span class="chat-unread">' + c.unread + '</span>' : '') + '</div>' +
+        '<div class="chat-sub">' + esc(c.title) + '</div>' +
+        '<div class="chat-ads">' +
+        '<span class="chat-ad-tag">' + (c.kind === 'sell' ? 'моё объявление' : 'я написал') + '</span>' +
+        '<span class="chat-ad-price">' + money(c.price) + '</span>' +
+        (stageName ? '<span class="chat-ad-stage">' + stageName + '</span>' : '') +
+        '</div></div></div>';
+    }
+    html += '</div>';
+    box.innerHTML = html;
+
+    box.querySelectorAll('.chat-row').forEach((row) => {
+      row.onclick = () => {
+        const id = row.dataset.chat;
+        if (row.dataset.kind === 'sell') App.openSellChatByListing(id);
+        else App.openBuyChat((App.state.listings || []).find((l) => l.id === id));
+      };
+    });
+  };
+
+  /* ---------------- ПРОФИЛЬ (вкладка) ---------------- */
+  App.renderProfile = function () {
+    const box = $('#view-profile');
+    if (!box) return;
+    const s = this.state;
+    const p = root.EXTRA.profile(s);
+    const r = root.EXTRA.rating(s);
+    const stars = (n) => '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+    const promo = root.EXTRA.promoOf(s);
+    const left = root.EXTRA.promoLeft(s);
+    const active = root.EXTRA.promoActive(s);
+
+    let html = '<div class="prof-page">' +
+      '<div class="prof-card">' +
+      '<div class="prof-top">' +
+      '<div class="avatar" id="prof-avatar" style="background:' + root.EXTRA.AVATAR_COLORS[p.color] + '">' +
+      root.EXTRA.AVATARS[p.avatar] + '</div>' +
+      '<div class="prof-name"><b>' + esc(p.name) + '</b><span>' + esc(p.city) + '</span></div>' +
+      '<div class="prof-rate">' + (r.count ? r.avg + ' ★' : '—') + '<span>' + r.count + ' отзывов</span></div>' +
+      '</div>' +
+      '<div class="prof-about">' + esc(p.about) + '</div>' +
+      '</div>' +
+
+      '<div class="prof-card">' +
+      '<div class="prof-h">Редактировать профиль</div>' +
+      '<div class="field"><label>Имя</label><input id="inp-name" type="text" maxlength="24" value="' + esc(p.name) + '"></div>' +
+      '<div class="field"><label>Город</label><input id="inp-city" type="text" maxlength="24" value="' + esc(p.city) + '"></div>' +
+      '<div class="field"><label>О себе</label><input id="inp-about" type="text" maxlength="90" value="' + esc(p.about) + '"></div>' +
+      '<div class="tiny muted">Аватар</div><div class="avatar-row" id="avatar-row">' +
+      root.EXTRA.AVATARS.map((a, i) => '<button class="av-btn' + (i === p.avatar ? ' on' : '') + '" data-av="' + i + '">' + a + '</button>').join('') +
+      '</div>' +
+      '<button class="btn primary mt12" id="btn-prof-save" style="width:100%">Сохранить</button>' +
+      '</div>' +
+
+      '<div class="prof-card">' +
+      '<div class="prof-h">Продвижение</div>' +
+      '<div class="promo-state">' + (active
+        ? '<b>' + promo.name + '</b> · осталось ' + left + ' дн. · ' + promo.buyers[0] + '–' + promo.buyers[1] + ' покупателей в день'
+        : 'не подключено · 2–4 покупателя в день') + '</div>' +
+      root.EXTRA.PROMO.filter((t) => t.price).map((t) =>
+        '<div class="promo-row"><div class="pr-txt"><b>' + t.name + '</b><span>' +
+        t.buyers[0] + '–' + t.buyers[1] + ' в день · ' + t.days + ' дней</span></div>' +
+        '<button class="btn sm primary" data-promo="' + t.key + '"' + (s.balance >= t.price ? '' : ' disabled') + '>' +
+        money(t.price) + '</button></div>').join('') +
+      '</div>' +
+
+      '<div class="prof-card">' +
+      '<div class="prof-h">Отзывы <span class="muted">' + r.count + '</span></div>' +
+      (r.count ? p.reviews.map((rev) =>
+        '<div class="review-row"><div class="rev-stars">' + stars(rev.stars) + '</div>' +
+        '<div class="rev-text">' + esc(rev.text) + '</div>' +
+        '<div class="rev-day">день ' + rev.day + '</div></div>').join('')
+        : '<div class="empty"><b>Отзывов пока нет</b><p>Продай телефон — покупатель оставит оценку.</p></div>') +
+      '</div></div>';
+    box.innerHTML = html;
+
+    box.querySelectorAll('#avatar-row .av-btn').forEach((b) => {
+      b.onclick = () => {
+        p.avatar = parseInt(b.dataset.av, 10);
+        p.color = (p.color + 3) % root.EXTRA.AVATAR_COLORS.length;
+        box.querySelectorAll('#avatar-row .av-btn').forEach((x) => x.classList.remove('on'));
+        b.classList.add('on');
+        const av = $('#prof-avatar');
+        av.textContent = root.EXTRA.AVATARS[p.avatar];
+        av.style.background = root.EXTRA.AVATAR_COLORS[p.color];
+      };
+    });
+    $('#btn-prof-save').onclick = () => {
+      p.name = ($('#inp-name').value || 'Перекупщик').trim().slice(0, 24);
+      p.city = ($('#inp-city').value || 'Москва').trim().slice(0, 24);
+      p.about = ($('#inp-about').value || '').trim().slice(0, 90);
+      App.save(); App.syncHeader && App.syncHeader();
+      App.toast('Профиль сохранён', 'good');
+      App.renderProfile();
+    };
+    box.querySelectorAll('[data-promo]').forEach((b) => {
+      b.onclick = () => {
+        const res = root.EXTRA.buyPromo(App.state, b.dataset.promo);
+        if (!res.ok) { App.toast(res.error, 'bad'); return; }
+        App.save(); App.syncHeader && App.syncHeader();
+        App.toast('Тариф «' + res.tariff.name + '» подключён', 'good');
+        App.renderProfile();
+      };
+    });
+  };
+
+  /* ---------------- НАСТРОЙКИ (вкладка) ---------------- */
+  App.renderSettings = function () {
+    const box = $('#view-settings');
+    if (!box) return;
+    const s = this.state;
+    const theme = root.EXTRA.getTheme();
+    let html = '<div class="prof-page">' +
+      '<div class="prof-card">' +
+      '<div class="prof-h">Живые диалоги (DeepSeek)</div>' +
+      '<div class="tiny muted">Характер и цифры считает игра, нейросеть только формулирует реплики.</div>' +
+      '<div class="field mt12"><label>API-ключ DeepSeek</label>' +
+      '<input id="inp-key" class="key-input" type="password" placeholder="sk-..." value="' + esc(root.AI.key || '') + '">' +
+      '<div class="key-status" id="key-status">' + (root.AI.available() ? 'ключ сохранён' : 'ключ не задан — диалоги на шаблонах') + '</div></div>' +
+      '<div class="btn-row"><button class="btn primary" id="btn-key-save">Сохранить</button>' +
+      '<button class="btn" id="btn-key-test">Проверить</button></div>' +
+      '<div class="tiny muted mt8">Ключ хранится только у тебя на устройстве и уходит напрямую в DeepSeek.</div>' +
+      '</div>' +
+
+      '<div class="prof-card">' +
+      '<div class="prof-h">Оформление</div>' +
+      '<div class="theme-row">' +
+      ['light', 'dark', 'system'].map((t) =>
+        '<button class="btn sm' + (theme === t ? ' primary' : '') + '" data-theme-set="' + t + '">' +
+        ({ light: 'Светлая', dark: 'Тёмная', system: 'Системная' })[t] + '</button>').join('') +
+      '</div></div>' +
+
+      '<div class="prof-card">' +
+      '<div class="prof-h">Режим: ' + esc(root.Engine.modeOf(s).name) + '</div>' +
+      '<div class="tiny muted">' + esc(root.Engine.modeOf(s).note) + '</div>' +
+      '<button class="btn mt12" id="btn-mode" style="width:100%">Сменить режим</button>' +
+      '</div>' +
+
+      '<div class="prof-card">' +
+      '<div class="prof-h">Прогресс</div>' +
+      '<div class="tiny muted">День ' + s.day + ' · профит ' + money(s.stats.profit) + ' · сделок ' + s.stats.sold + '</div>' +
+      '<div class="btn-row mt12"><button class="btn" id="btn-export">Скопировать сейв</button>' +
+      '<button class="btn danger" id="btn-reset">Начать заново</button></div>' +
+      '</div>' +
+
+      '<div class="tiny muted" style="text-align:center;padding:12px">v0.3 · Москва · ' + root.DATA.MODELS.length + ' моделей</div>' +
+      '</div>';
+    box.innerHTML = html;
+
+    box.querySelectorAll('[data-theme-set]').forEach((b) => {
+      b.onclick = () => {
+        root.EXTRA.applyTheme(b.dataset.themeSet);
+        App.renderSettings();
+      };
+    });
+    $('#btn-key-save').onclick = () => {
+      const k = $('#inp-key').value.trim();
+      root.AI.setKey(k);
+      try { localStorage.setItem('mide.key', k); } catch (e) {}
+      App.state.hideAiBanner = false;
+      App.toast(k ? 'Ключ сохранён' : 'Ключ убран', k ? 'good' : '');
+      App.renderSettings();
+    };
+    $('#btn-key-test').onclick = async () => {
+      const k = $('#inp-key').value.trim();
+      if (!k) { App.toast('Введи ключ', 'bad'); return; }
+      root.AI.setKey(k);
+      const st = $('#key-status');
+      st.textContent = 'проверяем...';
+      const r = await root.AI.chat([{ role: 'user', content: 'Ответь одним словом: работает' }], { maxTokens: 20 });
+      if (r.ok) { st.textContent = 'ключ рабочий'; st.className = 'key-status ok'; App.toast('Ключ рабочий', 'good'); }
+      else { st.textContent = 'ошибка: ' + r.error; st.className = 'key-status bad'; }
+    };
+    $('#btn-mode').onclick = () => App.modeModal && App.modeModal();
+    $('#btn-export').onclick = () => {
+      try { navigator.clipboard.writeText(JSON.stringify(App.state)); App.toast('Сейв скопирован', 'good'); }
+      catch (e) { App.toast('Не получилось скопировать', 'bad'); }
+    };
+    $('#btn-reset').onclick = () => {
+      if (!confirm('Начать заново? Прогресс пропадёт.')) return;
+      try { localStorage.removeItem('mide.save'); } catch (e) {}
+      location.reload();
+    };
+  };
+
+  /* ---------------- переключение вкладок ---------------- */
+  const origGo = App.go;
+  App.go = function (view) {
+    origGo.call(this, view);
+    if (view === 'chats') this.openChats();
+    else if (view === 'profile') this.renderProfile();
+    else if (view === 'settings') this.renderSettings();
+    this.markTabs(view);
+  };
+
+  App.markTabs = function (view) {
+    document.querySelectorAll('.av-tab').forEach((b) => {
+      b.classList.toggle('on', b.dataset.tab === view);
+    });
+    document.querySelectorAll('.av-nav').forEach((b) => {
+      b.classList.toggle('on', b.dataset.id === view);
+    });
+    document.querySelectorAll('.view').forEach((v) => {
+      v.classList.toggle('active', v.id === 'view-' + view);
+    });
+  };
+
+  // кнопки профиля/настроек в шапке теперь переключают вкладки
+  App.openProfile = function () { this.go('profile'); };
+  App.openSettings = function () { this.go('settings'); };
 })(window);
 
 </script>
