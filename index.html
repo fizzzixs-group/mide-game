@@ -2333,6 +2333,157 @@ body.ov-open .av-bottom{ display: flex !important; }
   .av-bottom, body.ov-open .av-bottom, body .av-bottom{ display: flex !important; }
 }
 
+
+/* ============================================================
+   МЕНЮ: на телефоне ВСЕГДА видно, ничем не скрывается
+   ============================================================ */
+html body .av-bottom,
+html body.ov-open .av-bottom{
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+@media (min-width: 761px){
+  html body .av-bottom,
+  html body.ov-open .av-bottom{
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   ЧАТ: нормальная ширина, кнопки в ряд, поле ввода видно
+   ============================================================ */
+.overlay > .chat-body, .overlay .chat-body{
+  max-width: 760px !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  padding: 12px 14px 8px !important;
+  box-sizing: border-box !important;
+}
+.overlay .msgs, .overlay .messages, .overlay .chat-log{
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  padding: 8px 0 !important;
+}
+.overlay .msg, .overlay .bubble{
+  max-width: 78% !important;
+  padding: 9px 12px !important;
+  font-size: 13.5px !important;
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+}
+.overlay .quick, .overlay .quick-btns, .overlay .chat-quick{
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  padding: 6px 0 !important;
+}
+.overlay .quick button, .overlay .chat-quick button, .overlay .qbtn{
+  flex: 0 0 auto !important;
+  min-height: 34px !important;
+  padding: 6px 12px !important;
+  border-radius: 17px !important;
+  border: 1px solid var(--av-line) !important;
+  background: var(--av-card) !important;
+  color: var(--av-ink) !important;
+  font-size: 12.5px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+.overlay .chat-input, .overlay .chat-input-row{
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  padding-top: 6px !important;
+  border-top: 1px solid var(--av-line) !important;
+}
+.overlay .chat-input input, .overlay .chat-input-row input{
+  flex: 1 1 auto !important;
+  min-height: 42px !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+}
+@media (max-width: 760px){
+  .overlay > .chat-body, .overlay .chat-body{
+    padding-bottom: 60px !important;
+  }
+  .overlay .msg, .overlay .bubble{ max-width: 86% !important; }
+}
+
+
+/* мобильный чат: поле ввода поднято над меню */
+@media (max-width: 760px){
+  .overlay > .chat-body, .overlay .chat-body{
+    padding-bottom: 0 !important;
+  }
+  .overlay .chat-input, .overlay .chat-input-row{
+    margin-bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    background: var(--av-card) !important;
+    padding: 8px 0 !important;
+  }
+  .overlay .quick, .overlay .quick-btns, .overlay .chat-quick{
+    padding-bottom: 4px !important;
+  }
+}
+
+
+/* ============================================================
+   ЧАТ: композер (кнопки + ввод) поднят над нижним меню
+   ============================================================ */
+.overlay .composer{
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  background: var(--av-bg) !important;
+  border-top: 1px solid var(--av-line) !important;
+  padding: 8px 0 6px !important;
+}
+.overlay .chat-wrap{
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  min-height: 0 !important;
+}
+.overlay .input-row{
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+.overlay .input-row input{
+  flex: 1 1 auto !important;
+  min-height: 42px !important;
+  padding: 0 12px !important;
+  background: var(--av-sub) !important;
+  border: 1px solid var(--av-line) !important;
+  border-radius: 12px !important;
+  color: var(--av-ink) !important;
+  font-size: 14px !important;
+}
+.overlay .send-btn{
+  flex: 0 0 46px !important;
+  width: 46px !important; height: 42px !important;
+  border-radius: 12px !important;
+  border: 0 !important;
+  background: var(--av-blue) !important;
+  color: #fff !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+}
+@media (max-width: 760px){
+  .overlay .composer{
+    padding-bottom: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .overlay .quick{ max-height: 96px; overflow-y: auto; }
+}
+
 </style>
 </head>
 <body>
@@ -7386,6 +7537,7 @@ const App = {
 
 
   /* нижнее меню выносим прямо в body, чтобы никакой контейнер его не ломал */
+  document.body.classList.remove('ov-open');
   function parkNav() {
     const nav = document.querySelector('.av-bottom');
     if (nav && nav.parentElement !== document.body) {
@@ -7408,9 +7560,9 @@ const App = {
     const anyOpen = Array.from(document.querySelectorAll('.overlay'))
       .some((o) => o.classList.contains('open'));
     document.body.classList.toggle('ov-open', anyOpen);
-    // нижнее меню НЕ прячем никогда — иначе некуда нажать, чтобы выйти
+    // меню не трогаем вообще — его видимостью управляет только CSS
     const nav = document.querySelector('.av-bottom');
-    if (nav) nav.style.display = '';
+    if (nav) nav.removeAttribute('style');
   }
   function watchOverlays() {
     document.querySelectorAll('.overlay').forEach(function (o) {
