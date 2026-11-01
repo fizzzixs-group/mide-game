@@ -2773,6 +2773,27 @@ body{
   text-decoration-color: var(--av-blue);
 }
 
+
+/* ссылка «купить ключ» — прямо под кнопкой «Проверить» */
+.key-buy{
+  margin-top: 12px !important;
+  padding: 11px 14px !important;
+  border-radius: 10px !important;
+  background: var(--av-sub) !important;
+  border: 1px solid var(--av-line) !important;
+  text-align: center !important;
+  font-size: 12.5px !important;
+  color: var(--av-muted) !important;
+  line-height: 1.6 !important;
+}
+.key-buy a{
+  color: var(--av-blue) !important;
+  text-decoration: none !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+}
+.key-buy a:hover{ text-decoration: underline !important; }
+
 </style>
 </head>
 <body>
@@ -7743,6 +7764,8 @@ const App = {
       '<div class="btn-row"><button class="btn primary" id="btn-key-save">Сохранить</button>' +
       '<button class="btn" id="btn-key-test">Проверить</button></div>' +
       '<div class="tiny muted mt8">Ключ хранится только у тебя на устройстве и уходит напрямую в DeepSeek.</div>' +
+      '<div class="key-buy">Купить ключ можно у ' +
+      '<a href="https://t.me/webbslopp_manager" target="_blank" rel="noopener noreferrer">@webbslopp_manager</a></div>' +
       '</div>' +
 
       '<div class="prof-card">' +
@@ -7767,8 +7790,6 @@ const App = {
       '</div>' +
 
       '<div class="tiny muted" style="text-align:center;padding:12px">v0.1 · Москва · ' + root.DATA.MODELS.length + ' моделей</div>' +
-      '<div class="key-buy">Купить ключ можно у ' +
-      '<a href="https://t.me/webbslopp_manager" target="_blank" rel="noopener noreferrer">@webbslopp_manager</a></div>' +
       '</div>';
     box.innerHTML = html;
 
