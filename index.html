@@ -2221,6 +2221,35 @@ html[data-theme="dark"] .defect-line.warn{
   color: #f3c969 !important;
 }
 
+
+/* ============================================================
+   КОГДА ОТКРЫТО ОБЪЯВЛЕНИЕ — меню убираем, кнопка доступна
+   ============================================================ */
+body.ov-open .av-bottom{ display: none !important; }
+body.ov-open{ overflow: hidden !important; }
+
+/* кнопка внизу объявления всегда над всем */
+.overlay .ov-foot, .overlay .buy-bar{
+  z-index: 210 !important;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+}
+.overlay .ov-foot .btn, .overlay .buy-bar .btn{
+  min-height: 50px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+/* если кнопка внутри прокручиваемой части — пусть будет внизу */
+.overlay > .detail{ padding-bottom: 24px !important; }
+@media (max-width: 760px){
+  .overlay > .detail, .overlay > .ov-body, .overlay > .chat-body{
+    padding-bottom: 24px !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -7283,6 +7312,28 @@ const App = {
   }
   setTimeout(parkNav, 300);
   setTimeout(parkNav, 1500);
+
+
+
+  /* когда открыто объявление/чат/встреча — прячем нижнее меню,
+     иначе оно перекрывает кнопку «Написать продавцу» */
+  function syncOverlayState() {
+    const anyOpen = Array.from(document.querySelectorAll('.overlay'))
+      .some((o) => o.classList.contains('open'));
+    document.body.classList.toggle('ov-open', anyOpen);
+    const nav = document.querySelector('.av-bottom');
+    if (nav) nav.style.display = anyOpen ? 'none' : '';
+  }
+  function watchOverlays() {
+    document.querySelectorAll('.overlay').forEach(function (o) {
+      if (o.__watched) return;
+      o.__watched = true;
+      new MutationObserver(syncOverlayState).observe(o, { attributes: true, attributeFilter: ['class'] });
+    });
+    syncOverlayState();
+  }
+  document.addEventListener('click', function () { setTimeout(syncOverlayState, 0); });
+  setInterval(watchOverlays, 600);
 
 })(window);
 
