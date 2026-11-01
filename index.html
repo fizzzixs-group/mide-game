@@ -1280,6 +1280,126 @@ html, body { background: var(--bg) !important; }
   background: #fff !important;
 }
 
+
+/* ---------------- тема: переменные ------------- */
+:root {
+  --bg: #f4f6f8; --card: #ffffff; --ink: #10131a; --muted: #767f8c;
+  --line: #e5e7eb; --chip: #ffffff; --sub: #f0f2f5;
+}
+
+html, body { background: var(--bg) !important; color: var(--ink) !important; }
+#app, .wrap, .shell, .app, .card, .card-body, .stock-item, .sheet, .ov, .modal {
+  background: var(--card) !important; color: var(--ink) !important;
+}
+.hdr, .top, .tabs, .bottom, .tabbar { background: var(--card) !important; border-color: var(--line) !important; }
+.card { border-color: var(--line) !important; }
+.card-price, .logo, .brand, .detail h1, .detail h2 { color: var(--ink) !important; }
+.card-mkt, .card-desc, .card-meta, .tiny.muted, .tab { color: var(--muted) !important; }
+.chip { background: var(--chip) !important; border-color: var(--line) !important; color: var(--ink) !important; }
+#feed-search, .search-row input, .field input, .field select {
+  background: var(--sub) !important; border-color: var(--line) !important; color: var(--ink) !important;
+}
+.facts .pill { background: var(--sub) !important; color: var(--ink) !important; }
+
+/* тёмная тема: аккуратные акценты */
+html[data-theme="dark"] .card-title { color: #6ea8ff !important; }
+html[data-theme="dark"] .btn.ghost { background: var(--sub) !important; color: var(--ink) !important; border-color: var(--line) !important; }
+html[data-theme="dark"] .defect-line { background: #3a1f1f !important; color: #ff8f8a !important; }
+html[data-theme="dark"] .defect-line.ok { background: #17301f !important; color: #67e8a1 !important; }
+html[data-theme="dark"] img.pphoto { background: #fff !important; }
+
+/* ---------------- профиль ---------------- */
+.profile-top { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; font-size: 24px; font-weight: 800; flex: 0 0 56px;
+}
+.avatar-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.av-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line);
+  background: var(--sub); color: var(--ink); font-size: 16px; cursor: pointer;
+}
+.av-btn.on { border: 2px solid var(--blue); background: #e8f0ff; color: var(--blue); }
+
+
+/* тёмная тема: шапка модалки, заголовки, формы */
+html[data-theme="dark"] .ov-head,
+html[data-theme="dark"] .sheet-head,
+html[data-theme="dark"] .gallery,
+html[data-theme="dark"] .gallery-view,
+html[data-theme="dark"] .gallery-view .slide,
+html[data-theme="dark"] .listing-photo {
+  background: var(--card) !important;
+  border-color: var(--line) !important;
+}
+html[data-theme="dark"] .ov-title b,
+html[data-theme="dark"] .ov-title span,
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .detail { color: var(--ink) !important; }
+html[data-theme="dark"] .ov-head .back { background: var(--sub) !important; color: var(--ink) !important; }
+html[data-theme="dark"] .ai-banner { background: var(--sub) !important; color: var(--ink) !important; }
+html[data-theme="dark"] .btn { color: var(--ink) !important; }
+html[data-theme="dark"] .btn.primary { color: #fff !important; }
+html[data-theme="dark"] .key-status { color: var(--muted) !important; }
+html[data-theme="dark"] .key-status.ok { color: #67e8a1 !important; }
+html[data-theme="dark"] .hint-line { color: var(--muted) !important; }
+
+
+/* ---------------- бейдж состояния ---------------- */
+.cond-badge {
+  display: inline-block; margin-right: 6px; padding: 1px 6px; border-radius: 6px;
+  font-size: 10.5px; font-weight: 700;
+}
+.cond-excellent { background: #e8f7ee; color: #02a34a; }
+.cond-good { background: #eef4ff; color: #0a5bff; }
+.cond-average { background: #fff6e5; color: #b7791f; }
+.cond-bad { background: #ffecea; color: #e02424; }
+html[data-theme="dark"] .cond-excellent { background: #17301f; color: #67e8a1; }
+html[data-theme="dark"] .cond-good { background: #182642; color: #7aa8ff; }
+html[data-theme="dark"] .cond-average { background: #3a2f16; color: #f3c969; }
+html[data-theme="dark"] .cond-bad { background: #3a1f1f; color: #ff8f8a; }
+
+/* ---------------- расширенные фильтры ---------------- */
+.filters-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.f-select, .f-input {
+  height: 34px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--sub) !important; color: var(--ink) !important;
+  padding: 0 10px; font-size: 12.5px; min-width: 120px;
+}
+.f-input { width: 96px; min-width: 96px; }
+.f-select option { background: var(--card); color: var(--ink); }
+
+/* ---------------- профиль: мелочи ---------------- */
+.profile-top .txt b { display: block; font-size: 15px; }
+.profile-top .txt span { display: block; font-size: 12px; color: var(--muted); }
+.ok-card { background: #eef7f1 !important; border-color: #bfe6cd !important; }
+html[data-theme="dark"] .ok-card { background: #17301f !important; border-color: #2c5a3d !important; }
+
+
+/* фильтры — одной строкой, кнопка компактная */
+.filters-row { flex-wrap: nowrap !important; overflow-x: auto !important; padding-bottom: 4px; }
+.filters-row .f-select, .filters-row .f-input { flex: 0 0 auto; }
+#f-apply { flex: 0 0 auto; width: auto !important; padding: 0 16px !important; height: 34px !important; }
+@media (max-width: 620px) {
+  .filters-row { flex-wrap: wrap !important; overflow: visible !important; }
+  #f-apply { width: 100% !important; }
+}
+/* тёмная тема: кнопка «Включить» в баннере */
+html[data-theme="dark"] .ai-banner button { background: var(--blue) !important; color: #fff !important; }
+html[data-theme="dark"] .ai-banner b { color: var(--ink) !important; }
+
+
+/* оверлей тарифов */
+#ov-promo {
+  position: fixed; inset: 0; z-index: 60; display: none;
+  background: var(--bg); overflow-y: auto;
+}
+#ov-promo.open { display: block; }
+#ov-promo .ov-head, #ov-promo .detail { background: var(--card) !important; color: var(--ink) !important; }
+@media (min-width: 760px) {
+  #ov-promo { left: 50%; transform: translateX(-50%); width: 720px; box-shadow: 0 0 60px rgba(0,0,0,.25); }
+}
+
 </style>
 </head>
 <body>
@@ -2842,12 +2962,18 @@ html, body { background: var(--bg) !important; }
 
     // новые покупатели на свои объявления — каждый день по несколько сообщений
     let msgCount = 0;
+    // поток зависит от тарифа продвижения: без него 2-4, средний 5-7, максимум до 35
+    const X = (typeof window !== 'undefined' ? window.EXTRA : null);
+    const promo = (X && X.promoOf(state)) || { buyers: [2, 4] };
+    const pool = promo.buyers;
+    let budget = pool[0] + Math.floor(Math.random() * (pool[1] - pool[0] + 1));
     for (const l of state.myListings) {
-      l.views += rndInt(6, 26);
+      l.views += rndInt(6, Math.max(10, pool[1] * 8));
       const active = (l.buyers || []).filter(b => b.stage !== 'lost' && b.stage !== 'done').length;
-      if (active >= 7) continue;
-      const n = active >= 4 ? 1 : rndInt(1, 3);
-      for (let i = 0; i < n; i++) { buyerAppears(state, l); msgCount++; }
+      if (active >= 9) continue;
+      if (budget <= 0) break;
+      const n = Math.min(budget, active >= 4 ? 1 : rndInt(1, Math.max(1, Math.ceil(pool[1] / 6))));
+      for (let i = 0; i < n; i++) { buyerAppears(state, l); msgCount++; budget--; }
     }
     if (msgCount) events.push({ type: 'messages', text: 'Новые сообщения по объявлениям: ' + msgCount, tone: '' });
 
@@ -3445,6 +3571,218 @@ window.DESK_PHOTO = [];
   root.AI = AI;
   if (typeof module !== 'undefined' && module.exports) module.exports = AI;
 })(typeof window !== 'undefined' ? window : globalThis);
+
+
+/* ===== extras.js ===== */
+/* ============================================================
+   MIDE — темы, профиль, отзывы, продвижение, фильтры.
+   Отдельный модуль: грузится после ui.js и flows.js,
+   дополняет приложение, не ломая существующее.
+   ============================================================ */
+(function (root) {
+  'use strict';
+
+  const THEME_KEY = 'mide.theme';
+
+  /* ---------------- ТЕМА ---------------- */
+  const THEMES = {
+    light: {
+      '--bg': '#f4f6f8', '--card': '#ffffff', '--ink': '#10131a', '--muted': '#767f8c',
+      '--line': '#e5e7eb', '--chip': '#ffffff', '--sub': '#f0f2f5'
+    },
+    dark: {
+      '--bg': '#0f1117', '--card': '#191c24', '--ink': '#eef1f6', '--muted': '#8b93a1',
+      '--line': '#2a2f3a', '--chip': '#21252f', '--sub': '#20242e'
+    }
+  };
+
+  function applyTheme(mode) {
+    const rootEl = document.documentElement;
+    let use = mode;
+    if (!use || use === 'system') {
+      use = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    const vars = THEMES[use] || THEMES.light;
+    Object.keys(vars).forEach((k) => rootEl.style.setProperty(k, vars[k]));
+    rootEl.setAttribute('data-theme', use);
+    try { localStorage.setItem(THEME_KEY, mode || 'system'); } catch (e) {}
+    return use;
+  }
+
+  function getTheme() {
+    try { return localStorage.getItem(THEME_KEY) || 'system'; } catch (e) { return 'system'; }
+  }
+
+  if (window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = () => { if (getTheme() === 'system') applyTheme('system'); };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
+
+  /* ---------------- ПРОФИЛЬ ---------------- */
+  const AVATARS = ['●', '◆', '▲', '★', '✦', '◉', '◈', '❖'];
+  const AVATAR_COLORS = ['#0a5bff', '#02a34a', '#ff6b00', '#8b5cf6', '#ef4444', '#0ea5e9', '#f59e0b', '#14b8a6'];
+
+  function profile(state) {
+    if (!state.profile) {
+      state.profile = {
+        name: 'Перекупщик',
+        avatar: 0,
+        color: 0,
+        city: 'Москва',
+        about: 'Покупаю и продаю телефоны. Честно описываю состояние.',
+        reviews: []
+      };
+    }
+    const p = state.profile;
+    if (!Array.isArray(p.reviews)) p.reviews = [];
+    return p;
+  }
+
+  function rating(state) {
+    const p = profile(state);
+    const r = p.reviews;
+    if (!r.length) return { avg: 0, count: 0 };
+    const sum = r.reduce((a, x) => a + (x.stars || 0), 0);
+    return { avg: Math.round((sum / r.length) * 10) / 10, count: r.length };
+  }
+
+  /* ---------------- ОТЗЫВЫ ---------------- */
+  const GOOD = [
+    'Всё как в описании, встретились быстро. Рекомендую!',
+    'Телефон нормальный, продавец адекватный. Всё показал.',
+    'Спасибо, аппарат рабочий, претензий нет.',
+    'Приехал вовремя, всё проверили вместе. Доволен.',
+    'Второй раз беру, всё честно.'
+  ];
+  const MID = [
+    'Телефон норм, но ждать пришлось долго.',
+    'В целом ок, но состояние чуть хуже, чем в объявлении.',
+    'Взял, работает. Есть небольшие вопросы к внешнему виду.'
+  ];
+  const BAD = [
+    'Скрыл дефект. Не советую.',
+    'Телефон оказался не таким, как на фото.',
+    'Пришлось возвращать, всё через нервы.'
+  ];
+
+  function addReview(state, stars, text) {
+    const p = profile(state);
+    p.reviews.unshift({
+      stars: Math.max(1, Math.min(5, stars)),
+      text: text,
+      day: state.day,
+      rating: stars
+    });
+    if (p.reviews.length > 60) p.reviews.length = 60;
+    return p.reviews[0];
+  }
+
+  function reviewChance(state) {
+    // чем честнее продал, тем лучше отзыв
+    const r = rating(state);
+    return Math.max(0.15, Math.min(0.95, (r.avg || 4) / 5));
+  }
+
+  /* ---------------- СОСТОЯНИЕ ПО ДЕФЕКТАМ ---------------- */
+  const STATES = [
+    { key: 'excellent', name: 'Отличное', hint: 'Всё идеально' },
+    { key: 'good', name: 'Хорошее', hint: 'Есть царапины на корпусе' },
+    { key: 'average', name: 'Среднее', hint: 'Трещины, износ батареи' },
+    { key: 'bad', name: 'Плохое', hint: 'Не работает, iCloud, IMEI' }
+  ];
+
+  function conditionOf(phone) {
+    const keys = (phone.defects || []).map((d) => d.key);
+    if (keys.indexOf('icloud') >= 0 || keys.indexOf('imei') >= 0 || keys.indexOf('screen_dead') >= 0) {
+      return STATES[3];
+    }
+    if (keys.indexOf('screen_crack') >= 0 || keys.indexOf('battery') >= 0 || keys.indexOf('water') >= 0) {
+      return STATES[2];
+    }
+    if (keys.indexOf('frame') >= 0 || keys.indexOf('back') >= 0 || keys.indexOf('camera') >= 0) {
+      return STATES[1];
+    }
+    return STATES[0];
+  }
+
+  /* ---------------- ПРОДВИЖЕНИЕ ---------------- */
+  const PROMO = [
+    { key: 'none', name: 'Без продвижения', price: 0, days: 0, buyers: [2, 4], note: 'обычный поток' },
+    { key: 'mid', name: 'Продвижение', price: 1225, days: 5, buyers: [5, 7], note: '5 дней, больше покупателей' },
+    { key: 'max', name: 'Максимум', price: 10000, days: 5, buyers: [25, 35], note: '5 дней, максимум внимания' }
+  ];
+
+  function promoOf(state) {
+    const s = state.promo || { key: 'none', until: 0 };
+    if (s.until && s.until < state.day) return PROMO[0];
+    return PROMO.filter((p) => p.key === s.key)[0] || PROMO[0];
+  }
+
+  function promoActive(state) {
+    const s = state.promo || { key: 'none', until: 0 };
+    return s.until && s.until >= state.day && s.key !== 'none';
+  }
+
+  function promoLeft(state) {
+    const s = state.promo || { until: 0 };
+    return s.until ? Math.max(0, s.until - state.day) : 0;
+  }
+
+  function buyPromo(state, key) {
+    const t = PROMO.filter((p) => p.key === key)[0];
+    if (!t || !t.price) return { ok: false, error: 'нет такого тарифа' };
+    if (state.balance < t.price) return { ok: false, error: 'не хватает денег' };
+    state.balance -= t.price;
+    state.promo = { key: key, until: state.day + t.days };
+    return { ok: true, tariff: t };
+  }
+
+  /* ---------------- ФИЛЬТРЫ ---------------- */
+  function passesFilter(state, listing, model, filter) {
+    const st = conditionOfPhoneLite(listing);
+    if (!filter) return true;
+    if (filter.cond && filter.cond !== 'all' && st.key !== filter.cond) return false;
+    if (filter.priceMin && listing.ask < filter.priceMin) return false;
+    if (filter.priceMax && listing.ask > filter.priceMax) return false;
+    if (filter.brand && filter.brand !== 'all' && model.brand !== filter.brand) return false;
+    return true;
+  }
+
+  function conditionOfPhoneLite(listing) {
+    const keys = (listing.defects || []).map((d) => d.key);
+    if (keys.indexOf('icloud') >= 0 || keys.indexOf('imei') >= 0 || keys.indexOf('screen_dead') >= 0) return STATES[3];
+    if (keys.indexOf('screen_crack') >= 0 || keys.indexOf('battery') >= 0 || keys.indexOf('water') >= 0) return STATES[2];
+    if (keys.indexOf('frame') >= 0 || keys.indexOf('back') >= 0 || keys.indexOf('camera') >= 0) return STATES[1];
+    return STATES[0];
+  }
+
+  /* ---------------- ЭКСПОРТ ---------------- */
+  root.EXTRA = {
+    applyTheme: applyTheme,
+    getTheme: getTheme,
+    profile: profile,
+    rating: rating,
+    addReview: addReview,
+    reviewChance: reviewChance,
+    STATES: STATES,
+    conditionOf: conditionOf,
+    conditionOfPhoneLite: conditionOfPhoneLite,
+    PROMO: PROMO,
+    promoOf: promoOf,
+    promoActive: promoActive,
+    promoLeft: promoLeft,
+    buyPromo: buyPromo,
+    passesFilter: passesFilter,
+    AVATARS: AVATARS,
+    AVATAR_COLORS: AVATAR_COLORS,
+    GOOD: GOOD, MID: MID, BAD: BAD
+  };
+
+  // применяем тему сразу, как только загрузились
+  applyTheme(getTheme());
+})(window);
 
 
 /* ===== ui.js ===== */
@@ -4082,6 +4420,23 @@ const App = {
         : '') +
       '</div>' +
       '<div class="stock-item mt12">' +
+      '<div class="row"><div class="txt"><b>Оформление</b><span>Тема интерфейса</span></div></div>' +
+      '<div class="btn-row mt8" id="theme-row">' +
+      '<button class="btn sm' + (EXTRA.getTheme() === 'light' ? ' primary' : ' ghost') + '" data-theme-set="light">Светлая</button>' +
+      '<button class="btn sm' + (EXTRA.getTheme() === 'dark' ? ' primary' : ' ghost') + '" data-theme-set="dark">Тёмная</button>' +
+      '<button class="btn sm' + (EXTRA.getTheme() === 'system' ? ' primary' : ' ghost') + '" data-theme-set="system">Системная</button>' +
+      '</div></div>' +
+      '<div class="stock-item mt12">' +
+      '<div class="row"><div class="txt"><b>Профиль</b><span id="prof-line">' + esc(EXTRA.profile(s).name) +
+      ' · отзывов: ' + EXTRA.rating(s).count + (EXTRA.rating(s).count ? ' · ' + EXTRA.rating(s).avg + ' ★' : '') + '</span></div>' +
+      '<button class="btn sm primary" id="btn-profile" style="width:auto">Открыть</button></div>' +
+      '</div>' +
+      '<div class="stock-item mt12">' +
+      '<div class="row"><div class="txt"><b>Продвижение</b><span id="promo-line">' +
+      (EXTRA.promoActive(s) ? EXTRA.promoOf(s).name + ', осталось ' + EXTRA.promoLeft(s) + ' дн.' : 'не подключено · 2–4 покупателя в день') +
+      '</span></div><button class="btn sm primary" id="btn-promo" style="width:auto">Тарифы</button></div>' +
+      '</div>' +
+      '<div class="stock-item mt12">' +
       '<div class="row"><div class="txt"><b>Режим: ' + esc(E.modeOf(s).name) + '</b><span>' + esc(E.modeOf(s).note) + '</span></div>' +
       '<button class="btn sm ghost" id="btn-mode" style="width:auto">Сменить</button></div>' +
       '</div>' +
@@ -4094,6 +4449,18 @@ const App = {
       '</div>';
     ov.classList.add('open');
 
+    document.querySelectorAll('[data-theme-set]').forEach((b) => {
+      b.onclick = () => {
+        EXTRA.applyTheme(b.dataset.themeSet);
+        document.querySelectorAll('[data-theme-set]').forEach((x) => {
+          x.classList.toggle('primary', x.dataset.themeSet === b.dataset.themeSet);
+          x.classList.toggle('ghost', x.dataset.themeSet !== b.dataset.themeSet);
+        });
+        App.toast('Тема: ' + b.textContent, '');
+      };
+    });
+    if ($('#btn-profile')) $('#btn-profile').onclick = () => App.openProfile();
+    if ($('#btn-promo')) $('#btn-promo').onclick = () => App.openPromo();
     $('#btn-key-save').onclick = () => {
       const k = $('#inp-key').value.trim();
       root.AI.setKey(k);
@@ -4150,6 +4517,70 @@ const App = {
   root.App = App;
   App.phoneSVG = phoneSVG;
   document.addEventListener('DOMContentLoaded', () => App.init());
+
+  /* ---------------- Профиль и отзывы ---------------- */
+  App.openProfile = function () {
+    const s = this.state;
+    const p = EXTRA.profile(s);
+    const r = EXTRA.rating(s);
+    const ov = $('#ov-settings');
+    const stars = (n) => '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n);
+    let list = '';
+    if (!p.reviews.length) {
+      list = '<div class="empty"><b>Отзывов пока нет</b><p>Продай телефон — покупатель оставит оценку.</p></div>';
+    } else {
+      for (const rev of p.reviews) {
+        list += '<div class="stock-item mt8">' +
+          '<div class="row"><div class="txt"><b>' + stars(rev.stars) + '</b>' +
+          '<span>День ' + rev.day + '</span></div></div>' +
+          '<div class="tiny" style="margin-top:6px;line-height:1.5">' + esc(rev.text) + '</div></div>';
+      }
+    }
+    ov.innerHTML =
+      '<div class="ov-head"><button class="back" data-act="open-settings">←</button>' +
+      '<div class="ov-title"><b>Профиль</b><span>' + (r.count ? r.avg + ' ★ · ' + r.count + ' отзывов' : 'без отзывов') + '</span></div></div>' +
+      '<div class="detail">' +
+      '<div class="stock-item">' +
+      '<div class="profile-top">' +
+      '<div class="avatar" id="prof-avatar" style="background:' + EXTRA.AVATAR_COLORS[p.color] + '">' + EXTRA.AVATARS[p.avatar] + '</div>' +
+      '<div class="txt"><b id="prof-name">' + esc(p.name) + '</b><span>' + esc(p.city) + '</span></div>' +
+      '</div>' +
+      '<div class="field mt12"><label>Имя</label><input id="inp-name" type="text" maxlength="24" value="' + esc(p.name) + '"></div>' +
+      '<div class="field mt12"><label>Город</label><input id="inp-city" type="text" maxlength="24" value="' + esc(p.city) + '"></div>' +
+      '<div class="field mt12"><label>О себе</label><input id="inp-about" type="text" maxlength="90" value="' + esc(p.about) + '"></div>' +
+      '<div class="tiny muted mt8">Аватар</div>' +
+      '<div class="avatar-row" id="avatar-row">' +
+      EXTRA.AVATARS.map((a, i) => '<button class="av-btn' + (i === p.avatar ? ' on' : '') + '" data-av="' + i + '">' + a + '</button>').join('') +
+      '</div>' +
+      '<div class="btn-row mt12"><button class="btn sm primary" id="btn-prof-save">Сохранить</button></div>' +
+      '</div>' +
+      '<div class="section-title mt12">Отзывы <span class="hint">' + r.count + '</span></div>' +
+      list +
+      '<div style="height:20px"></div></div>';
+    ov.classList.add('open');
+
+    document.querySelectorAll('#avatar-row .av-btn').forEach((b) => {
+      b.onclick = () => {
+        p.avatar = parseInt(b.dataset.av, 10);
+        p.color = (p.color + 3) % EXTRA.AVATAR_COLORS.length;
+        document.querySelectorAll('#avatar-row .av-btn').forEach((x) => x.classList.remove('on'));
+        b.classList.add('on');
+        const av = $('#prof-avatar');
+        av.textContent = EXTRA.AVATARS[p.avatar];
+        av.style.background = EXTRA.AVATAR_COLORS[p.color];
+      };
+    });
+    $('#btn-prof-save').onclick = () => {
+      p.name = ($('#inp-name').value || 'Перекупщик').trim().slice(0, 24);
+      p.city = ($('#inp-city').value || 'Москва').trim().slice(0, 24);
+      p.about = ($('#inp-about').value || '').trim().slice(0, 90);
+      App.save();
+      App.render();
+      App.toast('Профиль сохранён', 'good');
+      App.openProfile();
+    };
+  };
+
 })(window);
 
 
@@ -5329,6 +5760,10 @@ const App = {
     this.save();
     this.render();
     this.go('listings');
+    // через мгновение покупатель может оставить отзыв
+    setTimeout(() => {
+      if (App.afterSale) App.afterSale();
+    }, 900);
   };
 
   /* ============================================================
@@ -5344,6 +5779,202 @@ const App = {
   });
 
   root.Flows = true;
+})(window);
+
+
+/* ===== extras2.js ===== */
+/* ============================================================
+   MIDE — второй блок улучшений: продвижение, отзывы после продажи,
+   фильтры по цене/модели/состоянию, показ состояния в карточке.
+   Грузится последним, аккуратно дополняет существующее.
+   ============================================================ */
+(function (root) {
+  'use strict';
+  const App = root.App;
+  if (!App) return;
+
+  function money(n) {
+    const v = Math.round(n || 0);
+    return String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+  }
+
+  /* ---------------- продвижение ---------------- */
+  App.openPromo = function () {
+    const s = this.state;
+    const cur = root.EXTRA.promoOf(s);
+    const left = root.EXTRA.promoLeft(s);
+    let html = '<div class="ov-head"><button class="back" data-act="open-settings">←</button>' +
+      '<div class="ov-title"><b>Продвижение</b><span>Больше покупателей в день</span></div></div>' +
+      '<div class="detail">';
+    if (root.EXTRA.promoActive(s)) {
+      html += '<div class="stock-item ok-card"><div class="row"><div class="txt"><b>Активно: ' + cur.name +
+        '</b><span>осталось ' + left + ' дн.</span></div></div></div>';
+    }
+    for (const t of root.EXTRA.PROMO) {
+      if (!t.price) continue;
+      const afford = s.balance >= t.price;
+      html += '<div class="stock-item mt12">' +
+        '<div class="row"><div class="txt"><b>' + t.name + '</b><span>' +
+        t.buyers[0] + '–' + t.buyers[1] + ' покупателей в день · ' + t.days + ' дней</span></div></div>' +
+        '<div class="btn-row mt8"><button class="btn sm primary" data-promo="' + t.key + '"' +
+        (afford ? '' : ' disabled') + '>' + money(t.price) + '</button></div>' +
+        (afford ? '' : '<div class="tiny muted mt4">не хватает ' + money(t.price - s.balance) + '</div>') +
+        '</div>';
+    }
+    html += '<div class="stock-item mt12"><div class="tiny muted">Без продвижения приходит 2–4 покупателя в день. ' +
+      'Продвижение действует на всё, что ты выставляешь.</div></div>' +
+      '<div style="height:20px"></div></div>';
+    let ov = document.getElementById('ov-promo');
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'ov-promo';
+      ov.className = 'overlay';
+      document.body.appendChild(ov);
+    }
+    ov.innerHTML = html;
+    ov.classList.add('open');
+    ov.querySelectorAll('[data-promo]').forEach((b) => {
+      b.onclick = () => {
+        const r = root.EXTRA.buyPromo(App.state, b.dataset.promo);
+        if (!r.ok) { App.toast(r.error, 'bad'); return; }
+        App.save();
+        App.render();
+        App.toast('Тариф «' + r.tariff.name + '» на ' + r.tariff.days + ' дней', 'good');
+        App.openPromo();
+      };
+    });
+  };
+
+  /* ---------------- отзыв после продажи ---------------- */
+  App.maybeReview = function () {
+    const s = this.state;
+    const prof = root.EXTRA.profile(s);
+    // покупатель пишет с вероятностью, зависящей от честности сделки
+    if (Math.random() > 0.55) return;
+    const trust = Math.max(0.2, Math.min(1, (root.EXTRA.rating(s).avg || 4.2) / 5));
+    const roll = Math.random();
+    let stars;
+    if (roll < trust * 0.8) stars = 5;
+    else if (roll < trust * 0.95) stars = 4;
+    else if (roll < 0.97) stars = 3;
+    else stars = 2;
+    const pool = stars >= 4 ? root.EXTRA.GOOD : stars === 3 ? root.EXTRA.MID : root.EXTRA.BAD;
+    const text = pool[Math.floor(Math.random() * pool.length)];
+    root.EXTRA.addReview(s, stars, text);
+    this.save();
+    this.toast('Покупатель оставил отзыв: ' + '★★★★★'.slice(0, stars), stars >= 4 ? 'good' : '');
+  };
+
+  /* ---------------- поток покупателей по тарифу ---------------- */
+  App.buyersPerDay = function () {
+    const t = root.EXTRA.promoOf(this.state);
+    const a = t.buyers[0];
+    const b = t.buyers[1];
+    return a + Math.floor(Math.random() * (b - a + 1));
+  };
+
+  /* ---------------- состояние в карточке ---------------- */
+  const origCard = App.cardHTML;
+  App.cardHTML = function (l, idx) {
+    let html = origCard.call(this, l, idx);
+    const st = root.EXTRA.conditionOfPhoneLite(l);
+    const badge = '<span class="cond-badge cond-' + st.key + '">' + st.name + '</span>';
+    html = html.replace('<div class="card-meta">', '<div class="card-meta">' + badge);
+    return html;
+  };
+
+  /* ---------------- расширенные фильтры ---------------- */
+  App.filterUI = function () {
+    const f = this.advFilter || { cond: 'all', priceMin: 0, priceMax: 0, brand: 'all' };
+    const brands = ['all'].concat(
+      Array.from(new Set((root.DATA.MODELS || []).map((m) => m.brand))).sort()
+    );
+    let html = '<div class="filters-row mt8">' +
+      '<select id="f-cond" class="f-select">' +
+      '<option value="all">Любое состояние</option>' +
+      root.EXTRA.STATES.map((s) => '<option value="' + s.key + '"' +
+        (f.cond === s.key ? ' selected' : '') + '>' + s.name + '</option>').join('') +
+      '</select>' +
+      '<select id="f-brand" class="f-select">' +
+      brands.map((b) => '<option value="' + b + '"' + (f.brand === b ? ' selected' : '') + '>' +
+        (b === 'all' ? 'Все бренды' : b) + '</option>').join('') +
+      '</select>' +
+      '<input id="f-min" class="f-input" type="number" placeholder="цена от" value="' + (f.priceMin || '') + '">' +
+      '<input id="f-max" class="f-input" type="number" placeholder="цена до" value="' + (f.priceMax || '') + '">' +
+      '<button class="btn sm primary" id="f-apply">Показать</button>' +
+      '</div>';
+    return html;
+  };
+
+  App.applyFilterUI = function () {
+    const g = (id) => document.getElementById(id);
+    const cond = g('f-cond') ? g('f-cond').value : 'all';
+    const brand = g('f-brand') ? g('f-brand').value : 'all';
+    const min = parseInt((g('f-min') || {}).value, 10) || 0;
+    const max = parseInt((g('f-max') || {}).value, 10) || 0;
+    this.advFilter = { cond: cond, brand: brand, priceMin: min, priceMax: max };
+    const btn = document.getElementById('f-apply');
+    if (btn) btn.onclick = () => App.applyFilterUI();
+    ['f-cond', 'f-brand'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.onchange = () => App.applyFilterUI();
+    });
+    const self = this;
+    const origFiltered = App.filteredListings;
+    if (!App._filterWrapped) {
+      App._filterWrapped = true;
+      App.filteredListings = function () {
+        const base = origFiltered.call(this);
+        const f = this.advFilter;
+        if (!f) return base;
+        return base.filter((l) => {
+          const m = root.Engine.MODELS_BY_ID[l.modelId];
+          return root.EXTRA.passesFilter(this.state, l, m, f);
+        });
+      };
+    }
+  };
+
+  /* ---------------- отзыв после продажи своей вещи ---------------- */
+  const origSell = App.sellPhone || null;
+  const origAccept = App.acceptOffer || null;
+
+  // после подтверждённой сделки покупатель может оставить отзыв
+  App.afterSale = function () {
+    if (Math.random() < 0.75) this.maybeReview();
+  };
+
+  /* подсовываем расширенные фильтры в ленту */
+  const origFeed = App.renderFeed;
+  App.renderFeed = function () {
+    origFeed.call(this);
+    const box = document.querySelector('#view-feed .filters');
+    if (box && !document.getElementById('f-cond')) {
+      box.insertAdjacentHTML('afterend', this.filterUI());
+    }
+    // обработчики навешиваем каждый раз — элементы пересоздаются
+    const btn = document.getElementById('f-apply');
+    if (btn) btn.onclick = () => { App.applyFilterUI(); App.redrawFeed(); };
+    ['f-cond', 'f-brand'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.onchange = () => { App.applyFilterUI(); App.redrawFeed(); };
+    });
+  };
+
+  // перерисовка: ленту пересобираем, фильтры возвращаем на место
+  App.redrawFeed = function () {
+    origFeed.call(this);
+    const box = document.querySelector('#view-feed .filters');
+    if (box && !document.getElementById('f-cond')) {
+      box.insertAdjacentHTML('afterend', this.filterUI());
+      const btn = document.getElementById('f-apply');
+      if (btn) btn.onclick = () => { App.applyFilterUI(); App.redrawFeed(); };
+      ['f-cond', 'f-brand'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.onchange = () => { App.applyFilterUI(); App.redrawFeed(); };
+      });
+    }
+  };
 })(window);
 
 </script>
