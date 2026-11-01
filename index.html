@@ -5733,12 +5733,20 @@ const App = {
           const isBuy = d.type === 'buy';
           const isSell = d.type === 'sell';
           const sign = isBuy ? '−' : '+';
-          const label = isBuy ? 'Купил' : isSell ? 'Продал' : 'Сдал';
+          const label = isBuy ? 'Купил' : isSell ? 'Продал' : 'Сдал в разбор';
+          const price = Number(d.price || 0);
+          const sub = [];
+          if (d.storage) sub.push(d.storage + ' ГБ');
+          if (d.color) sub.push(d.color);
+          if (isSell && typeof d.profit === 'number') {
+            sub.push((d.profit >= 0 ? 'профит +' : 'убыток ') + money(Math.abs(d.profit)));
+          }
+          if (isSell && d.boughtFor) sub.push('куплен за ' + money(d.boughtFor));
           return '<div class="deal-row">' +
             '<div class="deal-day">Д' + d.day + '</div>' +
             '<div class="deal-main"><b>' + label + ' ' + esc(m.name || '') + '</b>' +
-            '<span>' + esc(d.note || '') + '</span></div>' +
-            '<div class="deal-sum ' + (isBuy ? 'down' : 'up') + '">' + sign + money(d.amount || 0) + '</div>' +
+            '<span>' + esc(sub.join(' · ')) + '</span></div>' +
+            '<div class="deal-sum ' + (isBuy ? 'down' : 'up') + '">' + sign + money(price) + '</div>' +
             '</div>';
         }).join('') : '<div class="empty"><b>Сделок пока нет</b><p>Купи телефон в ленте и продай дороже.</p></div>') +
         '</div>' +
