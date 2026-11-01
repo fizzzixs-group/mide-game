@@ -2597,6 +2597,76 @@ html body.ov-open .av-bottom{
 }
 #ov-meet .meet-actions .btn:hover{ filter: brightness(1.05); }
 
+
+/* ============================================================
+   МОДАЛКИ (доставка, торг, смена режима) — поверх всего
+   ============================================================ */
+.modal-wrap{
+  position: fixed !important;
+  inset: 0 !important;
+  left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important;
+  z-index: 600 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(0,0,0,.55) !important;
+  padding: 16px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+}
+.modal-wrap.open{ display: flex !important; }
+.modal{
+  width: 100% !important;
+  max-width: 460px !important;
+  background: var(--av-card) !important;
+  color: var(--av-ink) !important;
+  border: 1px solid var(--av-line) !important;
+  border-radius: 18px !important;
+  padding: 18px 18px 16px !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.45) !important;
+  max-height: 86vh !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  animation: modalIn .18s ease both;
+}
+@keyframes modalIn{ from{ opacity:0; transform: translateY(10px) scale(.98);} to{ opacity:1; transform:none;} }
+.modal h3, .modal h2{
+  font-size: 18px !important; font-weight: 800 !important; color: var(--av-ink) !important;
+  margin: 0 0 8px !important;
+}
+.modal p, .modal .sub, .modal .tiny, .modal label{
+  font-size: 13px !important; color: var(--av-muted) !important; line-height: 1.5 !important;
+}
+.modal b, .modal strong{ color: var(--av-ink) !important; }
+.modal .field{ margin-top: 12px !important; }
+.modal .field label{
+  display: block !important; font-size: 11.5px !important; font-weight: 700 !important;
+  color: var(--av-muted) !important; margin-bottom: 6px !important;
+}
+.modal input, .modal .price-input input{
+  width: 100% !important;
+  min-height: 44px !important;
+  padding: 0 12px !important;
+  background: var(--av-sub) !important;
+  border: 1px solid var(--av-line) !important;
+  border-radius: 12px !important;
+  color: var(--av-ink) !important;
+  font-size: 15px !important;
+  box-sizing: border-box !important;
+}
+.modal .price-input{ display: flex !important; align-items: center !important; gap: 8px !important; }
+.modal .presets, .modal .preset-row{ display: flex !important; flex-wrap: wrap !important; gap: 8px !important; margin-top: 10px !important; }
+.modal .preset{
+  min-height: 36px !important; padding: 6px 12px !important;
+  border-radius: 10px !important; border: 1px solid var(--av-line) !important;
+  background: var(--av-sub) !important; color: var(--av-ink) !important;
+  font-size: 12.5px !important; cursor: pointer !important;
+}
+.modal .btn-row{ display: flex !important; gap: 10px !important; margin-top: 14px !important; }
+.modal .btn-row .btn{ flex: 1 !important; min-height: 46px !important; font-size: 14.5px !important; font-weight: 700 !important; border-radius: 12px !important; }
+.modal .btn.primary, .modal .btn-main{ background: var(--av-blue) !important; color: #fff !important; border-color: var(--av-blue) !important; }
+.modal .btn.ghost{ background: transparent !important; color: var(--av-ink) !important; }
+
 </style>
 </head>
 <body>
