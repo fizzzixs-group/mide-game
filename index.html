@@ -1239,16 +1239,54 @@ html[data-theme="dark"] .empty { background: transparent !important; color: var(
 .pr-txt span { display:block; font-size:12px; color:var(--av-muted); }
 .promo-row .btn { width:auto !important; min-width:96px; }
 
+
+/* ---------------- убираем обводки и лишние рамки ---------------- */
+.av-search{
+  border-width:1px!important; border-color:var(--av-line)!important;
+  background:var(--av-sub)!important;
+}
+.av-search:focus-within{ border-color:var(--av-blue)!important; }
+.av-search-go{ background:var(--av-blue)!important; }
+.f-select,.f-input,.chip{ box-shadow:none!important; outline:none!important; }
+.f-select:focus,.f-input:focus{ border-color:var(--av-blue)!important; }
+
+/* кнопки-иконки в шапке */
+.av-icon-btn{
+  width:40px;height:40px;border:0;border-radius:10px;background:transparent;color:var(--av-ink);
+  display:grid;place-items:center;cursor:pointer;flex:0 0 40px;
+}
+.av-icon-btn:hover{ background:var(--av-sub) }
+
+/* чипы-фильтры без рамок */
+.chip{ border:0!important; background:var(--av-sub)!important; }
+.chip.on{ background:var(--av-blue)!important; }
+
+/* нижнее меню: 5 кнопок ровно */
+.av-nav{ font-size:10px }
+
+
+/* мобильная шапка: всё в одну аккуратную строку */
+@media (max-width:760px){
+  .av-header-bar{
+    padding:0 12px 6px;overflow-x:auto;gap:0;
+    -webkit-overflow-scrolling:touch;
+  }
+  .av-tab{white-space:nowrap;padding:8px 10px;font-size:13.5px}
+  .av-balance{font-size:13.5px;margin:0 8px;white-space:nowrap}
+  .av-icon-btn{width:34px;height:34px;flex:0 0 34px}
+  .av-profile-btn span:not(.av-ava){display:none}
+  .av-ava{width:26px;height:26px}
+  .av-nav{font-size:9px;gap:2px;padding:6px 1px 5px}
+  .av-nav svg{width:20px;height:20px}
+  .av-nav span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px}
+}
+
 </style>
 </head>
 <body>
 <div id="app">
   <header class="av-header">
     <div class="av-header-top">
-      <button class="av-btn-cat" data-act="tab" data-id="feed" data-tab="feed">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="6" cy="6" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
-        <span>Все категории</span>
-      </button>
       <div class="av-search">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
         <input id="av-search-input" type="text" placeholder="Поиск по объявлениям">
@@ -1265,6 +1303,12 @@ html[data-theme="dark"] .empty { background: transparent !important; color: var(
       <button class="av-tab" data-act="tab" data-id="listings" data-tab="listings">Мои объявления</button>
       <div class="av-spacer"></div>
       <div class="av-balance" id="balance">5 000 ₽</div>
+      <button class="av-icon-btn" data-act="open-profile" title="Профиль">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      </button>
+      <button class="av-icon-btn" data-act="open-settings" title="Настройки" id="btn-settings">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
       <button class="av-profile-btn" data-act="open-profile">
         <span class="av-ava" id="av-ava">●</span>
         <span id="av-name">Перекупщик</span>
@@ -1306,6 +1350,10 @@ html[data-theme="dark"] .empty { background: transparent !important; color: var(
     <button class="av-nav" data-act="open-profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
       <span>Профиль</span>
+    </button>
+    <button class="av-nav" data-act="open-settings" id="nav-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      <span>Настройки</span>
     </button>
   </nav>
 
