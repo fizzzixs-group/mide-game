@@ -1281,6 +1281,193 @@ html[data-theme="dark"] .empty { background: transparent !important; color: var(
   .av-nav span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px}
 }
 
+
+/* ============================================================
+   ЗОЛОТАЯ ОБВОДКА — это автозаполнение браузера.
+   Перебиваем принудительно.
+   ============================================================ */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--av-sub) inset !important;
+  -webkit-text-fill-color: var(--av-ink) !important;
+  caret-color: var(--av-ink) !important;
+  transition: background-color 99999s ease-in-out 0s !important;
+  border-color: var(--av-line) !important;
+  outline: none !important;
+}
+/* жёлтая рамка автофила в Firefox */
+input:auto-fill { background: var(--av-sub) !important; }
+
+/* любые фокусы — только синяя рамка Авито, без золота */
+input:focus, textarea:focus, select:focus, button:focus {
+  outline: none !important;
+  border-color: var(--av-blue) !important;
+  box-shadow: none !important;
+}
+.field input, .field select, .key-input {
+  border: 1px solid var(--av-line) !important;
+  background: var(--av-sub) !important;
+  color: var(--av-ink) !important;
+  border-radius: 10px !important;
+}
+.field input:focus, .key-input:focus { border-color: var(--av-blue) !important; }
+
+/* ============================================================
+   МОБИЛЬНАЯ: верхние вкладки прячем — есть нижнее меню
+   ============================================================ */
+@media (max-width: 760px) {
+  .av-header-bar { display: none !important; }
+  .av-day { padding: 0 12px 8px !important; }
+  .av-header-top { padding: 10px 12px 8px !important; }
+  .av-bottom { display: flex !important; }
+}
+/* на компьютере нижнее меню не нужно */
+@media (min-width: 761px) {
+  .av-bottom { display: none !important; }
+}
+
+
+/* ============================================================
+   СКЛАД И МОИ ОБЪЯВЛЕНИЯ — плитки в два столбца, крупные
+   ============================================================ */
+.stock-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:16px;
+  align-items:start;
+}
+.stock-grid .stock-item{
+  background:var(--av-card)!important;
+  border:1px solid var(--av-line)!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  padding:0!important;
+  animation:cardIn .34s cubic-bezier(.2,.7,.3,1) both;
+  transition:box-shadow .18s ease, transform .18s ease;
+}
+.stock-grid .stock-item:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 26px rgba(0,0,0,.12);
+}
+@keyframes cardIn{
+  from{ opacity:0; transform:translateY(10px) scale(.98); }
+  to{ opacity:1; transform:none; }
+}
+/* картинка сверху крупная */
+.stock-grid .stock-top{
+  display:block!important; padding:0!important;
+}
+.stock-grid .thumb{
+  width:100%!important; height:190px!important; min-height:190px!important; max-height:190px!important;
+  border-radius:0!important; background:#fff!important;
+  margin:0!important; position:relative!important;
+}
+.stock-grid .thumb .svg-wrap{
+  position:absolute!important; inset:0!important; padding:10px!important;
+  display:grid!important; place-items:center!important; background:#fff!important;
+}
+.stock-grid .thumb img{
+  width:100%!important; height:100%!important; object-fit:contain!important;
+}
+.stock-grid .stock-info{ padding:12px 14px 0!important; }
+.stock-grid .nm{ font-size:14.5px!important; font-weight:600!important; color:var(--av-ink)!important; }
+.stock-grid .sub{ font-size:12px!important; color:var(--av-muted)!important; margin-top:2px; }
+.stock-grid .val{ font-size:15px!important; font-weight:800!important; color:var(--av-ink)!important; margin-top:6px; }
+.stock-grid .stock-defects{ margin-top:6px; display:flex; gap:5px; flex-wrap:wrap; }
+.stock-grid .stock-actions{ padding:10px 14px 14px!important; }
+.stock-grid .btn{ width:100%!important; }
+
+@media (max-width:760px){
+  .stock-grid{ grid-template-columns:1fr!important; gap:12px; }
+  .stock-grid .thumb{ height:170px!important; min-height:170px!important; }
+}
+
+
+/* кнопки: текст всегда виден */
+.btn, button.btn {
+  background: var(--av-sub) !important;
+  color: var(--av-ink) !important;
+  border: 1px solid var(--av-line) !important;
+  font-weight: 600 !important;
+}
+.btn.primary, .btn-main {
+  background: var(--av-blue) !important;
+  color: #fff !important;
+  border-color: var(--av-blue) !important;
+}
+.btn.danger { background: #ffeaea !important; color: #d92d20 !important; border-color: #ffd0d0 !important; }
+.btn.ghost { background: transparent !important; color: var(--av-ink) !important; }
+html[data-theme="dark"] .btn.danger { background: #3a1a1a !important; color: #ff8f8a !important; border-color: #52262a !important; }
+
+/* склад: три колонки, крупнее, на всю ширину */
+.stock-grid{ grid-template-columns:repeat(3, minmax(0,1fr))!important; }
+@media (max-width: 1024px){ .stock-grid{ grid-template-columns:repeat(2, minmax(0,1fr))!important; } }
+@media (max-width: 620px){ .stock-grid{ grid-template-columns:1fr!important; } }
+
+
+/* склад и объявления на всю ширину — плитки крупные */
+#view-stock, #view-listings, #view-log {
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#view-stock .section-title,
+#view-listings .section-title { margin-top: 0 !important; }
+
+
+/* контент на всю ширину окна */
+.content, main.content {
+  max-width: 1420px !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+#app { display: block !important; width: 100% !important; }
+body { display: block !important; }
+
+
+/* фото на складе — выше и крупнее */
+.stock-grid .thumb{
+  height:250px!important; min-height:250px!important; max-height:250px!important;
+}
+@media (max-width:760px){
+  .stock-grid .thumb{ height:200px!important; min-height:200px!important; }
+}
+
+
+/* ---------------- аккуратные анимации ---------------- */
+.card{
+  animation:feedIn .32s cubic-bezier(.2,.7,.3,1) both;
+  transition:transform .18s ease;
+}
+@keyframes feedIn{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:none; }
+}
+.card:hover .thumb{ transform:scale(1.02); }
+.card .thumb{ transition:transform .22s ease; }
+
+.av-tab, .av-nav, .av-icon-btn, .chip, .btn{
+  transition:background .16s ease, color .16s ease, transform .12s ease;
+}
+.btn:active, .chip:active, .av-tab:active{ transform:scale(.97); }
+
+/* оверлеи — плавное появление */
+.overlay{ animation:fadeInOv .2s ease both; }
+@keyframes fadeInOv{ from{opacity:0} to{opacity:1} }
+
+/* уважаем настройку «меньше движения» */
+@media (prefers-reduced-motion: reduce){
+  .card, .stock-grid .stock-item, .overlay{ animation:none!important; }
+  .card .thumb{ transition:none!important; }
+}
+
 </style>
 </head>
 <body>
@@ -3911,6 +4098,8 @@ const App = {
       'go-stock'() { App.go('stock'); },
       'open-listing'(id) { App.openListing(id); },
       'open-settings'() { App.openSettings(); },
+      'open-profile'() { App.openProfile(); },
+      'open-promo'() { App.openPromo(); },
       'hide-ai-banner'() { App.state.hideAiBanner = true; App.save(); App.renderFeed(); },
       'next-day'() { App.nextDay(); },
       'work'() {
@@ -4165,6 +4354,7 @@ const App = {
       const box = $('#view-stock');
       const phones = this.state.phones.filter(p => !p.sold);
       let html = '<div class="section-title">Мой склад <span class="hint">' + phones.length + ' шт</span></div>';
+      html += '<div class="stock-grid">';
       if (!phones.length) {
         html += '<div class="empty"><b>Склад пуст</b><p>Купи первый телефон в ленте — лучше всего с дефектом, который дёшево чинится.</p></div>';
         box.innerHTML = html;
@@ -4179,7 +4369,7 @@ const App = {
           '<div class="stock-top"><div class="thumb">' + thumbHTML(m) + '</div>' +
           '<div class="stock-info">' +
           '<div class="nm">' + esc(m.name) + ' ' + p.storage + ' ГБ</div>' +
-          '<div class="sub">куплен за ' + money(p.boughtFor) + ' · день ' + p.boughtDay + '</div>' +
+          '<div class="sub">' + (p.boughtFor ? 'куплен за ' + money(p.boughtFor) + ' · день ' + (p.boughtDay || 1) : 'стартовый телефон') + '</div>' +
           '<div class="val">Сейчас стоит ≈ ' + money(val) + '</div>' +
           '<div class="stock-defects">';
         if (!known.length && !unknownCount) html += '<span class="dtag ok">всё чисто</span>';
@@ -4190,6 +4380,7 @@ const App = {
           '<button class="btn sm" data-act="open-phone" data-id="' + p.id + '">Открыть</button>' +
           '</div></div>';
       }
+      html += '</div>';
       box.innerHTML = html;
     },
 
@@ -4198,6 +4389,7 @@ const App = {
       const box = $('#view-listings');
       const ls = this.state.myListings;
       let html = '<div class="section-title">Мои объявления <span class="hint">' + ls.length + '</span></div>';
+      html += '<div class="stock-grid">';
       if (!ls.length) {
         html += '<div class="empty"><b>Ничего не выставлено</b><p>Заходи в склад, выбирай телефон и жми «Выставить на Авито».</p></div>';
         box.innerHTML = html;
@@ -4221,6 +4413,7 @@ const App = {
           (last ? '<div class="tiny muted" style="margin-top:7px">Последний: ' + esc(last.personaName) + ' — ' + (last.stage === 'meeting' ? 'ждёт встречи' : 'торгуется') + '</div>' : '') +
           '</div>';
       }
+      html += '</div>';
       box.innerHTML = html;
     },
 
