@@ -2250,6 +2250,37 @@ body.ov-open{ overflow: hidden !important; }
   }
 }
 
+
+/* ============================================================
+   СКРОЛЛ: единственный контейнер — документ (html).
+   У body НЕ должно быть своего overflow, иначе колесо не крутит.
+   ============================================================ */
+html{
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  max-height: none !important;
+}
+body{
+  overflow: visible !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+  position: static !important;
+}
+#app, #content, main.content, .content, .view, section.view{
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+/* когда открыто объявление — фон не листается */
+body.ov-open{ overflow: hidden !important; }
+
+@media (max-width: 760px){
+  html{ -webkit-overflow-scrolling: touch !important; }
+}
+
 </style>
 </head>
 <body>
