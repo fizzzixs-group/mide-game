@@ -2746,6 +2746,12 @@ body{
   .filters-row{ padding-right: 2px !important; }
 }
 
+
+/* на компьютере нижней панели нет, и контент не обрезается */
+@media (min-width: 761px){
+  .content, main.content{ padding-bottom: 28px !important; }
+}
+
 </style>
 </head>
 <body>
@@ -7811,9 +7817,21 @@ const App = {
 
   /* Нижняя панель: выносим в body и ставим стили ИНЛАЙН,
      чтобы никакие правила CSS её не спрятали. */
+  function isPhone() {
+    return window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+  }
+
   function parkNav() {
-    let nav = document.querySelector('.av-bottom');
+    const nav = document.querySelector('.av-bottom');
     if (!nav || !nav.querySelector('.av-nav')) return;
+
+    /* на компьютере панель не нужна — убираем совсем */
+    if (!isPhone()) {
+      nav.style.setProperty('display', 'none', 'important');
+      return;
+    }
+    nav.style.removeProperty('display');
+
     if (nav.parentElement !== document.body) document.body.appendChild(nav);
     nav.style.cssText = [
       'position:fixed',
@@ -7834,8 +7852,9 @@ const App = {
       'box-sizing:border-box',
       'min-height:54px'
     ].join(';');
+
     nav.querySelectorAll('.av-nav').forEach(function (b) {
-      b.style.cssText += [
+      b.style.cssText = [
         'flex:1 1 0',
         'min-width:0',
         'display:flex',
@@ -7851,21 +7870,28 @@ const App = {
         'overflow:hidden'
       ].join(';') + ';';
       const sp = b.querySelector('span');
-      if (sp) sp.style.cssText += 'font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;';
+      if (sp) sp.style.cssText = 'font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:block;';
       const svg = b.querySelector('svg');
       if (svg) { svg.style.width = '19px'; svg.style.height = '19px'; svg.style.flex = '0 0 19px'; }
     });
   }
+
   parkNav();
   document.addEventListener('DOMContentLoaded', parkNav);
   setTimeout(parkNav, 200);
   setTimeout(parkNav, 800);
   setTimeout(parkNav, 2000);
+  window.addEventListener('resize', parkNav);
+  window.addEventListener('orientationchange', parkNav);
 
-  /* страховка: если панель пропала — вернуть */
+  /* страховка: на телефоне панель всегда на месте */
   setInterval(function () {
     const nav = document.querySelector('.av-bottom');
     if (!nav) return;
+    if (!isPhone()) {
+      if (getComputedStyle(nav).display !== 'none') nav.style.setProperty('display', 'none', 'important');
+      return;
+    }
     if (nav.parentElement !== document.body) document.body.appendChild(nav);
     if (getComputedStyle(nav).display === 'none' || nav.offsetHeight < 20) parkNav();
   }, 1200);
@@ -7878,9 +7904,7 @@ const App = {
     const anyOpen = Array.from(document.querySelectorAll('.overlay'))
       .some((o) => o.classList.contains('open'));
     document.body.classList.toggle('ov-open', anyOpen);
-    // меню не трогаем вообще — его видимостью управляет только CSS
-    const nav = document.querySelector('.av-bottom');
-    if (nav) nav.removeAttribute('style');
+    // меню не трогаем: его стили ставит parkNav
   }
   function watchOverlays() {
     document.querySelectorAll('.overlay').forEach(function (o) {
