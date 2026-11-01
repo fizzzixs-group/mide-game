@@ -1829,6 +1829,95 @@ html[data-theme="dark"] .stat-row b.down, html[data-theme="dark"] .deal-sum.down
 .main-phone .mp-photo, .mp-photo { max-width:64px!important; max-height:64px!important; width:64px!important; height:64px!important; object-fit:contain!important; }
 #view-log img{ max-width:120px!important; max-height:120px!important; }
 
+
+/* ============================================================
+   ОВЕРЛЕИ (объявление, чат, встреча) — заново, поверх всего
+   ============================================================ */
+.overlay{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 200 !important;
+  display: none !important;
+  flex-direction: column !important;
+  background: var(--av-bg) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  visibility: visible !important;
+  transform: none !important;
+  opacity: 1 !important;
+  left: 0 !important; top: 0 !important; right: 0 !important; bottom: 0 !important;
+  width: auto !important; height: auto !important;
+  max-width: none !important; max-height: none !important;
+  border-radius: 0 !important;
+}
+.overlay.open{ display: flex !important; }
+.overlay .ov-head{
+  position: sticky !important; top: 0 !important; z-index: 2 !important;
+  display: flex !important; align-items: center !important; gap: 10px !important;
+  padding: 12px 16px !important;
+  background: var(--av-card) !important;
+  border-bottom: 1px solid var(--av-line) !important;
+}
+.overlay .detail, .overlay .ov-body{
+  max-width: 900px !important; width: 100% !important;
+  margin: 0 auto !important; padding: 16px !important;
+  box-sizing: border-box !important;
+}
+@media (min-width: 900px){
+  .overlay .detail, .overlay .ov-body{ max-width: 860px !important; }
+}
+/* чат */
+.overlay .chat-body{ max-width: 900px; width: 100%; margin: 0 auto; }
+
+
+/* ============================================================
+   ТЕКСТ В ОВЕРЛЕЯХ — читаемый
+   ============================================================ */
+.overlay, .overlay .detail, .overlay .ov-body, .overlay .chat-body {
+  color: var(--av-ink) !important;
+  background: var(--av-bg) !important;
+}
+.overlay h1, .overlay h2, .overlay h3, .overlay b, .overlay strong,
+.overlay .seller-name, .overlay .name, .overlay .ov-title b { color: var(--av-ink) !important; }
+.overlay p, .overlay span, .overlay div, .overlay label, .overlay .tiny, .overlay .muted {
+  color: inherit;
+}
+.overlay .muted, .overlay .tiny.muted, .overlay small { color: var(--av-muted) !important; }
+.overlay .seller, .overlay .seller-card { background: var(--av-card) !important; border-radius: 12px; }
+.overlay .seller-name, .overlay .seller b { color: var(--av-ink) !important; font-size: 15px; }
+.overlay input, .overlay textarea {
+  background: var(--av-sub) !important; color: var(--av-ink) !important;
+  border: 1px solid var(--av-line) !important; border-radius: 10px !important;
+}
+/* галерея */
+.overlay .gallery, .overlay .gallery-view, .overlay .slide {
+  background: var(--av-card) !important; border-radius: 14px !important;
+}
+.overlay .gallery img { max-height: 420px !important; object-fit: contain !important; }
+/* нижняя кнопка в объявлении */
+.overlay .ov-foot, .overlay .buy-bar {
+  position: sticky !important; bottom: 0 !important;
+  background: var(--av-card) !important; border-top: 1px solid var(--av-line) !important;
+  padding: 10px 16px !important;
+}
+/* чат: пузыри */
+.overlay .msg.me, .overlay .bubble.me { background: var(--av-blue) !important; color: #fff !important; }
+.overlay .msg.them, .overlay .bubble.them { background: var(--av-sub) !important; color: var(--av-ink) !important; }
+.overlay .msg, .overlay .bubble { border-radius: 12px !important; }
+
+
+/* очень узкие экраны — только иконки */
+@media (max-width: 360px){
+  .av-nav span{ display:none!important; }
+  .av-nav{ padding:9px 0!important; }
+  .av-nav svg{ width:21px!important; height:21px!important; }
+}
+@media (max-width: 420px){
+  .av-nav span{ font-size:8.5px!important; }
+  .av-nav svg{ width:18px!important; height:18px!important; }
+  .av-nav{ padding:6px 0 4px!important; }
+}
+
 </style>
 </head>
 <body>
@@ -1850,6 +1939,7 @@ html[data-theme="dark"] .stat-row b.down, html[data-theme="dark"] .deal-sum.down
       <button class="av-tab" data-act="tab" data-id="chats" data-tab="chats">Сообщения</button>
       <button class="av-tab" data-act="tab" data-id="stock" data-tab="stock">Мои телефоны</button>
       <button class="av-tab" data-act="tab" data-id="listings" data-tab="listings">Мои объявления</button>
+      <button class="av-tab" data-act="tab" data-id="log" data-tab="log">Журнал</button>
       <div class="av-spacer"></div>
       <div class="av-balance" id="balance">5 000 ₽</div>
       <button class="av-icon-btn" data-act="tab" data-id="settings" title="Настройки" id="btn-settings">
