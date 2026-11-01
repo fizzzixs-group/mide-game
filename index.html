@@ -2662,6 +2662,90 @@ html body.ov-open .av-bottom{
   .content, main.content{ padding-bottom: 24px !important; }
 }
 
+
+/* ============================================================
+   НИЧЕГО НЕ ВЫХОДИТ ЗА ЭКРАН
+   ============================================================ */
+html{
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+body{
+  overflow-x: clip !important;      /* clip не создаёт свой скролл */
+  max-width: 100vw !important;
+  width: 100% !important;
+}
+#app, #content, .content, main.content, .view{
+  max-width: 100vw !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+.cards, .stock-grid{
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.card, .stock-item, .chat-row, .prof-card{
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+.card-title, .card-desc, .card-meta, .stock-grid .nm, .stock-grid .sub,
+.chat-sub, .chat-ad-tag, .deal-main b, .log-txt{
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+.av-header-top, .av-header-bar, .av-day, .filters-row{
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+.f-select, .f-input{
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+@media (max-width: 480px){
+  .f-select{ flex: 1 1 40% !important; min-width: 0 !important; }
+  .f-input{ flex: 1 1 30% !important; min-width: 0 !important; width: auto !important; }
+  #f-apply{ flex: 1 1 100% !important; }
+  .av-search input{ min-width: 0 !important; }
+}
+
+
+/* ============================================================
+   ШАПКА НА УЗКИХ ЭКРАНАХ: ничего не вылезает
+   ============================================================ */
+@media (max-width: 480px){
+  .av-header-top{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    padding: 8px 10px !important;
+    box-sizing: border-box !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+  }
+  .av-search{
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    padding-left: 10px !important;
+  }
+  .av-search input{ min-width: 0 !important; font-size: 13.5px !important; }
+  .av-search-go{
+    flex: 0 0 auto !important;
+    padding: 0 12px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+  .av-loc{
+    flex: 0 0 auto !important;
+    padding: 0 6px !important;
+    min-width: 32px !important;
+    max-width: 40px !important;
+    overflow: hidden !important;
+  }
+  .av-loc span{ display: none !important; }
+  .av-day{ padding: 0 10px 8px !important; }
+  .filters-row{ padding-right: 2px !important; }
+}
+
 </style>
 </head>
 <body>
