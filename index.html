@@ -2281,6 +2281,58 @@ body.ov-open{ overflow: hidden !important; }
   html{ -webkit-overflow-scrolling: touch !important; }
 }
 
+
+/* ============================================================
+   МЕНЮ ВСЕГДА ВИДНО. Кнопка объявления поднимается НАД меню.
+   ============================================================ */
+body.ov-open .av-bottom{ display: flex !important; }
+
+.av-bottom{
+  display: flex !important;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+  height: auto !important;
+  min-height: 52px !important;
+}
+.av-nav{ padding: 5px 0 4px !important; }
+
+/* на телефоне нижняя кнопка объявления поднята над меню */
+@media (max-width: 760px){
+  .overlay{ padding-bottom: 0 !important; }
+  .overlay .ov-foot, .overlay .buy-bar{
+    margin-bottom: 52px !important;
+    padding-bottom: 8px !important;
+  }
+  .overlay > .detail, .overlay > .ov-body, .overlay > .chat-body{
+    padding-bottom: 70px !important;
+  }
+  .content, main.content{
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* баланс в строке дня — только на телефоне */
+.av-balance-m{ display: none; font-weight: 800; font-size: 15px; color: var(--av-ink); }
+@media (max-width: 760px){
+  .av-balance-m{ display: inline-block; }
+}
+
+
+/* на компьютере нижнее меню не нужно */
+@media (min-width: 761px){
+  .av-bottom{ display: none !important; }
+  .av-balance-m{ display: none !important; }
+}
+
+
+/* ПК: меню скрыто всегда, даже при открытом объявлении */
+@media (min-width: 761px){
+  .av-bottom, body.ov-open .av-bottom, body .av-bottom{ display: none !important; }
+}
+/* мобильный: меню видно всегда */
+@media (max-width: 760px){
+  .av-bottom, body.ov-open .av-bottom, body .av-bottom{ display: flex !important; }
+}
+
 </style>
 </head>
 <body>
@@ -2315,6 +2367,7 @@ body.ov-open{ overflow: hidden !important; }
     </div>
     <div class="av-day">
       <span class="av-pill" id="pill-day">День 1</span>
+      <span class="av-balance-m" id="balance-m">5 000 ₽</span>
       <span class="av-spacer"></span>
       <button class="av-next" data-act="next-day">Следующий день →</button>
     </div>
@@ -5021,6 +5074,8 @@ const App = {
         b.textContent = money(target);
       }
       b.dataset.v = target;
+      const bm = $('#balance-m');
+      if (bm) bm.textContent = money(target);
       const pd = $('#pill-day');
       if (pd) pd.textContent = 'День ' + this.state.day;
       const pr = $('#pill-rep');
@@ -6915,6 +6970,7 @@ const App = {
     }
     if (el('av-city')) el('av-city').textContent = prof.city;
     if (el('balance')) el('balance').textContent = money(s.balance);
+    if (el('balance-m')) el('balance-m').textContent = money(s.balance);
     if (el('pill-day')) el('pill-day').textContent = 'День ' + s.day;
     if (el('pill-rep')) el('pill-rep').textContent = '★ ' + (s.rep || 50);
     if (el('pill-skill')) el('pill-skill').textContent = 'осмотр ' + (s.skill || 10);
@@ -7352,8 +7408,9 @@ const App = {
     const anyOpen = Array.from(document.querySelectorAll('.overlay'))
       .some((o) => o.classList.contains('open'));
     document.body.classList.toggle('ov-open', anyOpen);
+    // нижнее меню НЕ прячем никогда — иначе некуда нажать, чтобы выйти
     const nav = document.querySelector('.av-bottom');
-    if (nav) nav.style.display = anyOpen ? 'none' : '';
+    if (nav) nav.style.display = '';
   }
   function watchOverlays() {
     document.querySelectorAll('.overlay').forEach(function (o) {
