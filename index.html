@@ -1665,6 +1665,43 @@ html, body {
   object-fit: contain !important;
 }
 
+
+/* ============================================================
+   ПРОКРУТКА КОЛЕСОМ: скроллится только документ, без вложенных
+   ============================================================ */
+html {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+}
+body {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 0 !important;
+  position: static !important;
+}
+#app, .content, main.content, .view, section.view {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+/* оверлеи скроллятся сами */
+.overlay, #ov-promo {
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+
+/* загруженный аватар */
+.av-photo{
+  width:44px;height:44px;border-radius:50%;object-fit:cover;cursor:pointer;
+  border:2px solid transparent;
+}
+.av-photo.on{ border-color:var(--av-blue); }
+#prof-avatar{ background-size:cover!important; background-position:center!important; }
+#av-ava{ background-size:cover!important; background-position:center!important; }
+label.btn{ display:inline-flex; align-items:center; justify-content:center; }
+
 </style>
 </head>
 <body>
@@ -1696,13 +1733,7 @@ html, body {
         <span id="av-name">Перекупщик</span>
       </button>
     </div>
-    <div class="av-day">
-      <span class="av-pill" id="pill-day">День 1</span>
-      <span class="av-pill" id="pill-rep">★ 50</span>
-      <span class="av-pill" id="pill-skill">осмотр 10</span>
-      <div class="av-spacer"></div>
-      <button class="av-next" data-act="next-day">Следующий день →</button>
-    </div>
+    
   </header>
 
   <main class="content" id="content">
@@ -4402,9 +4433,12 @@ const App = {
         b.textContent = money(target);
       }
       b.dataset.v = target;
-      $('#pill-day').textContent = 'День ' + this.state.day;
-      $('#pill-rep').textContent = '★ ' + Math.round(this.state.rep);
-      $('#pill-skill').textContent = 'осмотр ' + Math.round(this.state.skill);
+      const pd = $('#pill-day');
+      if (pd) pd.textContent = 'День ' + this.state.day;
+      const pr = $('#pill-rep');
+      if (pr) pr.textContent = '★ ' + Math.round(this.state.rep);
+      const ps = $('#pill-skill');
+      if (ps) ps.textContent = 'осмотр ' + Math.round(this.state.skill);
       const gear = $('#btn-settings');
       if (gear) gear.classList.toggle('ai-on', root.AI.available());
     },
@@ -4477,12 +4511,7 @@ const App = {
           '</div>';
       }
 
-      html += '<div class="filters">' +
-        chip('all', 'Все', this.filter) + chip('hot', 'Выгодные', this.filter) +
-        chip('apple', 'Apple', this.filter) + chip('samsung', 'Samsung', this.filter) +
-        chip('xiaomi', 'Xiaomi', this.filter) + chip('fold', 'Складные', this.filter) +
-        chip('cheap', 'До 12к', this.filter) +
-        '</div>';
+
 
       html += '<div class="search-row"><input id="feed-search" type="text" placeholder="Поиск: iPhone, Galaxy, POCO…" value="' + esc(this.search || '') + '"></div>';
 
@@ -6300,8 +6329,13 @@ const App = {
     const el = (id) => document.getElementById(id);
     if (el('av-name')) el('av-name').textContent = prof.name;
     if (el('av-ava')) {
-      el('av-ava').textContent = root.EXTRA.AVATARS[prof.avatar];
-      el('av-ava').style.background = root.EXTRA.AVATAR_COLORS[prof.color];
+      if (prof.photo) {
+        el('av-ava').textContent = '';
+        el('av-ava').style.background = 'url(' + prof.photo + ') center/cover no-repeat';
+      } else {
+        el('av-ava').textContent = root.EXTRA.AVATARS[prof.avatar];
+        el('av-ava').style.background = root.EXTRA.AVATAR_COLORS[prof.color];
+      }
     }
     if (el('av-city')) el('av-city').textContent = prof.city;
     if (el('balance')) el('balance').textContent = money(s.balance);
@@ -6487,8 +6521,9 @@ const App = {
     let html = '<div class="prof-page">' +
       '<div class="prof-card">' +
       '<div class="prof-top">' +
-      '<div class="avatar" id="prof-avatar" style="background:' + root.EXTRA.AVATAR_COLORS[p.color] + '">' +
-      root.EXTRA.AVATARS[p.avatar] + '</div>' +
+      '<div class="avatar" id="prof-avatar" style="' +
+      (p.photo ? 'background:url(' + p.photo + ') center/cover no-repeat' : 'background:' + root.EXTRA.AVATAR_COLORS[p.color]) + '">' +
+      (p.photo ? '' : root.EXTRA.AVATARS[p.avatar]) + '</div>' +
       '<div class="prof-name"><b>' + esc(p.name) + '</b><span>' + esc(p.city) + '</span></div>' +
       '<div class="prof-rate">' + (r.count ? r.avg + ' ★' : '—') + '<span>' + r.count + ' отзывов</span></div>' +
       '</div>' +
@@ -6501,7 +6536,15 @@ const App = {
       '<div class="field"><label>Город</label><input id="inp-city" type="text" maxlength="24" value="' + esc(p.city) + '"></div>' +
       '<div class="field"><label>О себе</label><input id="inp-about" type="text" maxlength="90" value="' + esc(p.about) + '"></div>' +
       '<div class="tiny muted">Аватар</div><div class="avatar-row" id="avatar-row">' +
-      root.EXTRA.AVATARS.map((a, i) => '<button class="av-btn' + (i === p.avatar ? ' on' : '') + '" data-av="' + i + '">' + a + '</button>').join('') +
+      (p.photo
+        ? '<img class="av-photo' + (p.photo ? ' on' : '') + '" id="av-photo" src="' + p.photo + '" alt="">'
+        : '') +
+      root.EXTRA.AVATARS.map((a, i) => '<button class="av-btn' + (!p.photo && i === p.avatar ? ' on' : '') + '" data-av="' + i + '">' + a + '</button>').join('') +
+      '</div>' +
+      '<div class="btn-row mt8">' +
+      '<label class="btn sm" style="cursor:pointer;text-align:center">Загрузить фото' +
+      '<input type="file" id="av-upload" accept="image/*" style="display:none"></label>' +
+      (p.photo ? '<button class="btn sm danger" id="av-remove">Убрать фото</button>' : '') +
       '</div>' +
       '<button class="btn primary mt12" id="btn-prof-save" style="width:100%">Сохранить</button>' +
       '</div>' +
@@ -6528,9 +6571,47 @@ const App = {
       '</div></div>';
     box.innerHTML = html;
 
+    const up = box.querySelector('#av-upload');
+    if (up) {
+      up.onchange = (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        if (file.size > 4 * 1024 * 1024) { App.toast('Файл больше 4 МБ', 'bad'); return; }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            // сжимаем до 200×200 квадрата
+            const cv = document.createElement('canvas');
+            cv.width = 200; cv.height = 200;
+            const ctx = cv.getContext('2d');
+            const k = Math.min(200 / img.width, 200 / img.height);
+            const w = img.width * k, h = img.height * k;
+            ctx.drawImage(img, (200 - w) / 2, (200 - h) / 2, w, h);
+            p.photo = cv.toDataURL('image/jpeg', 0.85);
+            App.save();
+            App.syncHeader && App.syncHeader();
+            App.toast('Аватар загружен', 'good');
+            App.renderProfile();
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      };
+    }
+    const rm = box.querySelector('#av-remove');
+    if (rm) {
+      rm.onclick = () => {
+        delete p.photo;
+        App.save();
+        App.syncHeader && App.syncHeader();
+        App.renderProfile();
+      };
+    }
     box.querySelectorAll('#avatar-row .av-btn').forEach((b) => {
       b.onclick = () => {
         p.avatar = parseInt(b.dataset.av, 10);
+        delete p.photo;
         p.color = (p.color + 3) % root.EXTRA.AVATAR_COLORS.length;
         box.querySelectorAll('#avatar-row .av-btn').forEach((x) => x.classList.remove('on'));
         b.classList.add('on');
