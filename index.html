@@ -1715,6 +1715,25 @@ label.btn{ display:inline-flex; align-items:center; justify-content:center; }
 }
 .prof-main b{ color:var(--av-ink); }
 
+
+/* строка основного телефона с фото */
+.prof-main{
+  display:flex!important; align-items:center; gap:12px;
+  margin-top:10px; padding:10px 12px; border-radius:10px;
+  background:var(--av-sub); color:var(--av-ink); font-size:12.5px;
+}
+.pm-pic{
+  width:64px; height:64px; flex:0 0 64px; border-radius:9px;
+  background:#fff; overflow:hidden; display:grid; place-items:center;
+  border:1px solid var(--av-line);
+}
+.pm-pic .pphoto, .pm-pic img{
+  width:100%!important; height:100%!important; max-width:100%!important; max-height:100%!important;
+  object-fit:contain!important;
+}
+.pm-txt{ line-height:1.5; }
+.pm-txt b{ font-size:14px; }
+
 </style>
 </head>
 <body>
@@ -6544,9 +6563,11 @@ const App = {
       '<div class="prof-about">' + esc(p.about) + '</div>' +
       '<div class="prof-main">' + (function () {
         const mp = root.Engine.mainPhone(s);
-        if (!mp) return '★ Основной телефон не выбран — без него нельзя звонить и писать';
+        if (!mp) return '<span class="pm-txt">★ Основной телефон не выбран — без него нельзя звонить и писать</span>';
         const mm = root.Engine.MODELS_BY_ID[mp.modelId] || {};
-        return '★ Основной телефон: <b>' + esc(mm.name) + ' ' + mp.storage + ' ГБ</b>';
+        const pic = root.PHOTO ? root.PHOTO.ph(mm.id) : '';
+        return '<div class="pm-pic">' + pic + '</div>' +
+          '<div class="pm-txt">★ Основной телефон<br><b>' + esc(mm.name) + ' ' + mp.storage + ' ГБ</b></div>';
       })() + '</div>' +
       '</div>' +
 
