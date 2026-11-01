@@ -1702,6 +1702,19 @@ body {
 #av-ava{ background-size:cover!important; background-position:center!important; }
 label.btn{ display:inline-flex; align-items:center; justify-content:center; }
 
+
+/* бейдж основного телефона */
+.main-badge{
+  display:inline-block; background:var(--av-blue); color:#fff;
+  font-size:10.5px; font-weight:700; padding:1px 6px; border-radius:5px;
+  vertical-align:middle; margin-right:4px;
+}
+.prof-main{
+  margin-top:10px; padding:9px 12px; border-radius:9px;
+  background:var(--av-sub); color:var(--av-ink); font-size:12.5px;
+}
+.prof-main b{ color:var(--av-ink); }
+
 </style>
 </head>
 <body>
@@ -4592,7 +4605,8 @@ const App = {
         html += '<div class="stock-item" data-act="open-phone" data-id="' + p.id + '">' +
           '<div class="stock-top"><div class="thumb">' + thumbHTML(m) + '</div>' +
           '<div class="stock-info">' +
-          '<div class="nm">' + esc(m.name) + ' ' + p.storage + ' ГБ</div>' +
+          '<div class="nm">' + (this.state.mainPhoneId === p.id ? '<span class="main-badge">★ основной</span> ' : '') +
+          esc(m.name) + ' ' + p.storage + ' ГБ</div>' +
           '<div class="sub">' + (p.boughtFor ? 'куплен за ' + money(p.boughtFor) + ' · день ' + (p.boughtDay || 1) : 'стартовый телефон') + '</div>' +
           '<div class="val">Сейчас стоит ≈ ' + money(val) + '</div>' +
           '<div class="stock-defects">';
@@ -6375,9 +6389,9 @@ const App = {
   const origFeed = App.renderFeed;
   App.renderFeed = function () {
     origFeed.call(this);
-    const box = document.querySelector('#view-feed .filters');
+    const box = document.querySelector('#view-feed .section-title');
     if (box && !document.getElementById('f-cond')) {
-      box.insertAdjacentHTML('afterend', this.filterUI());
+      box.insertAdjacentHTML('beforebegin', this.filterUI());
     }
     // обработчики навешиваем каждый раз — элементы пересоздаются
     const btn = document.getElementById('f-apply');
@@ -6391,9 +6405,9 @@ const App = {
   // перерисовка: ленту пересобираем, фильтры возвращаем на место
   App.redrawFeed = function () {
     origFeed.call(this);
-    const box = document.querySelector('#view-feed .filters');
+    const box = document.querySelector('#view-feed .section-title');
     if (box && !document.getElementById('f-cond')) {
-      box.insertAdjacentHTML('afterend', this.filterUI());
+      box.insertAdjacentHTML('beforebegin', this.filterUI());
       const btn = document.getElementById('f-apply');
       if (btn) btn.onclick = () => { App.applyFilterUI(); App.redrawFeed(); };
       ['f-cond', 'f-brand'].forEach((id) => {
@@ -6528,6 +6542,12 @@ const App = {
       '<div class="prof-rate">' + (r.count ? r.avg + ' ★' : '—') + '<span>' + r.count + ' отзывов</span></div>' +
       '</div>' +
       '<div class="prof-about">' + esc(p.about) + '</div>' +
+      '<div class="prof-main">' + (function () {
+        const mp = root.Engine.mainPhone(s);
+        if (!mp) return '★ Основной телефон не выбран — без него нельзя звонить и писать';
+        const mm = root.Engine.MODELS_BY_ID[mp.modelId] || {};
+        return '★ Основной телефон: <b>' + esc(mm.name) + ' ' + mp.storage + ' ГБ</b>';
+      })() + '</div>' +
       '</div>' +
 
       '<div class="prof-card">' +
